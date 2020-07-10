@@ -1,0 +1,414 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+
+
+
+<title>Creating input landscapes in gen3sis</title>
+
+<script>// Pandoc 2.9 adds attributes on both header and div. We remove the former (to
+// be compatible with the behavior of Pandoc < 2.8).
+document.addEventListener('DOMContentLoaded', function(e) {
+  var hs = document.querySelectorAll("div.section[class*='level'] > :first-child");
+  var i, h, a;
+  for (i = 0; i < hs.length; i++) {
+    h = hs[i];
+    if (!/^h[1-6]$/i.test(h.tagName)) continue;  // it should be a header h1-h6
+    a = h.attributes;
+    while (a.length > 0) h.removeAttribute(a[0].name);
+  }
+});
+</script>
+
+
+<style type="text/css">code{white-space: pre;}</style>
+<style type="text/css" data-origin="pandoc">
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+    color: #aaaaaa;
+  }
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code span.at { color: #7d9029; } /* Attribute */
+code span.bn { color: #40a070; } /* BaseN */
+code span.bu { } /* BuiltIn */
+code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code span.ch { color: #4070a0; } /* Char */
+code span.cn { color: #880000; } /* Constant */
+code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code span.dt { color: #902000; } /* DataType */
+code span.dv { color: #40a070; } /* DecVal */
+code span.er { color: #ff0000; font-weight: bold; } /* Error */
+code span.ex { } /* Extension */
+code span.fl { color: #40a070; } /* Float */
+code span.fu { color: #06287e; } /* Function */
+code span.im { } /* Import */
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code span.op { color: #666666; } /* Operator */
+code span.ot { color: #007020; } /* Other */
+code span.pp { color: #bc7a00; } /* Preprocessor */
+code span.sc { color: #4070a0; } /* SpecialChar */
+code span.ss { color: #bb6688; } /* SpecialString */
+code span.st { color: #4070a0; } /* String */
+code span.va { color: #19177c; } /* Variable */
+code span.vs { color: #4070a0; } /* VerbatimString */
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+
+</style>
+<script>
+// apply pandoc div.sourceCode style to pre.sourceCode instead
+(function() {
+  var sheets = document.styleSheets;
+  for (var i = 0; i < sheets.length; i++) {
+    if (sheets[i].ownerNode.dataset["origin"] !== "pandoc") continue;
+    try { var rules = sheets[i].cssRules; } catch (e) { continue; }
+    for (var j = 0; j < rules.length; j++) {
+      var rule = rules[j];
+      // check if there is a div.sourceCode rule
+      if (rule.type !== rule.STYLE_RULE || rule.selectorText !== "div.sourceCode") continue;
+      var style = rule.style.cssText;
+      // check if color or background-color is set
+      if (rule.style.color === '' && rule.style.backgroundColor === '') continue;
+      // replace div.sourceCode by a pre.sourceCode rule
+      sheets[i].deleteRule(j);
+      sheets[i].insertRule('pre.sourceCode{' + style + '}', j);
+    }
+  }
+})();
+</script>
+
+
+
+<style type="text/css">body {
+background-color: #fff;
+margin: 1em auto;
+max-width: 700px;
+overflow: visible;
+padding-left: 2em;
+padding-right: 2em;
+font-family: "Open Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
+font-size: 14px;
+line-height: 1.35;
+}
+#TOC {
+clear: both;
+margin: 0 0 10px 10px;
+padding: 4px;
+width: 400px;
+border: 1px solid #CCCCCC;
+border-radius: 5px;
+background-color: #f6f6f6;
+font-size: 13px;
+line-height: 1.3;
+}
+#TOC .toctitle {
+font-weight: bold;
+font-size: 15px;
+margin-left: 5px;
+}
+#TOC ul {
+padding-left: 40px;
+margin-left: -1.5em;
+margin-top: 5px;
+margin-bottom: 5px;
+}
+#TOC ul ul {
+margin-left: -2em;
+}
+#TOC li {
+line-height: 16px;
+}
+table {
+margin: 1em auto;
+border-width: 1px;
+border-color: #DDDDDD;
+border-style: outset;
+border-collapse: collapse;
+}
+table th {
+border-width: 2px;
+padding: 5px;
+border-style: inset;
+}
+table td {
+border-width: 1px;
+border-style: inset;
+line-height: 18px;
+padding: 5px 5px;
+}
+table, table th, table td {
+border-left-style: none;
+border-right-style: none;
+}
+table thead, table tr.even {
+background-color: #f7f7f7;
+}
+p {
+margin: 0.5em 0;
+}
+blockquote {
+background-color: #f6f6f6;
+padding: 0.25em 0.75em;
+}
+hr {
+border-style: solid;
+border: none;
+border-top: 1px solid #777;
+margin: 28px 0;
+}
+dl {
+margin-left: 0;
+}
+dl dd {
+margin-bottom: 13px;
+margin-left: 13px;
+}
+dl dt {
+font-weight: bold;
+}
+ul {
+margin-top: 0;
+}
+ul li {
+list-style: circle outside;
+}
+ul ul {
+margin-bottom: 0;
+}
+pre, code {
+background-color: #f7f7f7;
+border-radius: 3px;
+color: #333;
+white-space: pre-wrap; 
+}
+pre {
+border-radius: 3px;
+margin: 5px 0px 10px 0px;
+padding: 10px;
+}
+pre:not([class]) {
+background-color: #f7f7f7;
+}
+code {
+font-family: Consolas, Monaco, 'Courier New', monospace;
+font-size: 85%;
+}
+p > code, li > code {
+padding: 2px 0px;
+}
+div.figure {
+text-align: center;
+}
+img {
+background-color: #FFFFFF;
+padding: 2px;
+border: 1px solid #DDDDDD;
+border-radius: 3px;
+border: 1px solid #CCCCCC;
+margin: 0 5px;
+}
+h1 {
+margin-top: 0;
+font-size: 35px;
+line-height: 40px;
+}
+h2 {
+border-bottom: 4px solid #f7f7f7;
+padding-top: 10px;
+padding-bottom: 2px;
+font-size: 145%;
+}
+h3 {
+border-bottom: 2px solid #f7f7f7;
+padding-top: 10px;
+font-size: 120%;
+}
+h4 {
+border-bottom: 1px solid #f7f7f7;
+margin-left: 8px;
+font-size: 105%;
+}
+h5, h6 {
+border-bottom: 1px solid #ccc;
+font-size: 105%;
+}
+a {
+color: #0033dd;
+text-decoration: none;
+}
+a:hover {
+color: #6666ff; }
+a:visited {
+color: #800080; }
+a:visited:hover {
+color: #BB00BB; }
+a[href^="http:"] {
+text-decoration: underline; }
+a[href^="https:"] {
+text-decoration: underline; }
+
+code > span.kw { color: #555; font-weight: bold; } 
+code > span.dt { color: #902000; } 
+code > span.dv { color: #40a070; } 
+code > span.bn { color: #d14; } 
+code > span.fl { color: #d14; } 
+code > span.ch { color: #d14; } 
+code > span.st { color: #d14; } 
+code > span.co { color: #888888; font-style: italic; } 
+code > span.ot { color: #007020; } 
+code > span.al { color: #ff0000; font-weight: bold; } 
+code > span.fu { color: #900; font-weight: bold; } 
+code > span.er { color: #a61717; background-color: #e3d2d2; } 
+</style>
+
+
+
+
+</head>
+
+<body>
+
+
+
+
+<h1 class="title toc-ignore">Creating input landscapes in gen3sis</h1>
+<h4 class="date">09.07.2020</h4>
+
+
+
+<p>This vignette aims at showing how to use the function <em>create_input_landscape</em> that creates input landscape objects necessary to run <em>gen3sis</em>. These objects are:</p>
+<ul>
+<li><p>a rds file containing a landscape list of raster stacks for environmental variables;</p></li>
+<li><p>a series of rds files, one for each time-step, including distance matrices between sites.</p></li>
+</ul>
+<p>To create these files, the function requires as arguments:</p>
+<ul>
+<li><p>a named list of environmental rasters containing layers for the different time steps, with each raster layer representing the spatial distribution of an environmental variable;</p></li>
+<li><p>a cost function defining how dispersal between particular types of sites is penalized (to be used for the calculation of the distance matrices).</p></li>
+</ul>
+<p>Below, we will generate the R objects required by the function <em>create_input_landscape</em> step by step. For this exercise, we will use the simple center of the world landscape that we used in the <a href="introduction.html"><strong>introduction vignette</strong></a> and in the main text of the package manuscript as case study 1.</p>
+<p>The first step is to load the necessary packages and set the working directory:</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1"></a><span class="co"># first we load the required packages</span></span>
+<span id="cb1-2"><a href="#cb1-2"></a><span class="kw">library</span>(gen3sis)</span>
+<span id="cb1-3"><a href="#cb1-3"></a><span class="kw">library</span>(raster)</span>
+<span id="cb1-4"><a href="#cb1-4"></a></span>
+<span id="cb1-5"><a href="#cb1-5"></a><span class="co"># next we set the working directory to the package path</span></span>
+<span id="cb1-6"><a href="#cb1-6"></a>datapath &lt;-<span class="st"> </span><span class="kw">system.file</span>(<span class="st">&quot;extdata&quot;</span>, <span class="dt">package =</span> <span class="st">&quot;gen3sis&quot;</span>)</span>
+<span id="cb1-7"><a href="#cb1-7"></a><span class="kw">setwd</span>(datapath)</span></code></pre></div>
+<div id="creating-the-environmental-data-frames" class="section level2">
+<h2>Creating the environmental data frames</h2>
+<p>In this step, the user needs to create the data frames containing the spatiotemporal distribution of the environmental variables of interest. Here, we will use the temperature, aridity and area rasters of the 4d sample world that has been used in the <a href="introduction.html"><strong>introduction vignette</strong></a>. We first load the three corresponding raster bricks from the hard drive.</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1"></a>temperature_brick &lt;-<span class="st"> </span><span class="kw">brick</span>(<span class="st">&quot;InputRasters/WorldCenter/temp_rasters.grd&quot;</span>)</span>
+<span id="cb2-2"><a href="#cb2-2"></a>aridity_brick &lt;-<span class="st"> </span><span class="kw">brick</span>(<span class="st">&quot;InputRasters/WorldCenter/aridity_rasters.grd&quot;</span>)</span>
+<span id="cb2-3"><a href="#cb2-3"></a>area_brick &lt;-<span class="st"> </span><span class="kw">brick</span>(<span class="st">&quot;InputRasters/WorldCenter/area_rasters.grd&quot;</span>)</span></code></pre></div>
+<p>If you want to learn how you can create a virtual dynamic landscape from scratch, please refer to the <a href="design_landscape.html"><strong>design_landscape vignette</strong></a>.</p>
+</div>
+<div id="creating-a-list-with-the-environmental-data-frames" class="section level2">
+<h2>Creating a list with the environmental data frames</h2>
+<p>To create the input landscape for <em>gen3sis</em>, all environmental variables have to be stored as raster files in a named list. It is important to add the name of the environmental variable you want to use in the list, which will be used when specifying the config file. Alternatively, you can also create a list which contains all of the raster file paths on your hard drive.</p>
+<p>We will now create a list that contains all of the layers of our raster bricks for temperature, aridity and area.</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1"></a>landscapes_list &lt;-<span class="st"> </span><span class="kw">list</span>(<span class="dt">temp =</span> <span class="ot">NULL</span>, <span class="dt">arid =</span> <span class="ot">NULL</span>, <span class="dt">area =</span> <span class="ot">NULL</span>)</span>
+<span id="cb3-2"><a href="#cb3-2"></a><span class="cf">for</span> (i <span class="cf">in</span> <span class="dv">1</span><span class="op">:</span><span class="kw">nlayers</span>(temperature_brick)) {</span>
+<span id="cb3-3"><a href="#cb3-3"></a>    landscapes_list<span class="op">$</span>temp &lt;-<span class="st"> </span><span class="kw">c</span>(landscapes_list<span class="op">$</span>temp, temperature_brick[[i]])</span>
+<span id="cb3-4"><a href="#cb3-4"></a>    landscapes_list<span class="op">$</span>arid &lt;-<span class="st"> </span><span class="kw">c</span>(landscapes_list<span class="op">$</span>arid, aridity_brick[[i]])</span>
+<span id="cb3-5"><a href="#cb3-5"></a>    landscapes_list<span class="op">$</span>area &lt;-<span class="st"> </span><span class="kw">c</span>(landscapes_list<span class="op">$</span>area, area_brick[[i]])</span>
+<span id="cb3-6"><a href="#cb3-6"></a>}</span></code></pre></div>
+</div>
+<div id="defining-a-cost-function" class="section level2">
+<h2>Defining a cost function</h2>
+<p>The second argument we need to define is a cost function. This function should define the connection cost between sites. The species dispersal ability will determine if sites are reachable (i.e. if the dispersal event is higher than the connection cost).</p>
+<p>First, let’s look at a very simple case, where no cost is added to the geographical distances, meaning that connections costs equal geographic distance. The costs have to be defined in meters because the coordinate system is in meters for real landscapes. Hence, we can define a simple cost function in which the dispersal is not penalized:</p>
+<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1"></a>cost_function_null &lt;-<span class="st"> </span><span class="cf">function</span>(source, habitable_src, dest, habitable_dest) {</span>
+<span id="cb4-2"><a href="#cb4-2"></a>    <span class="kw">return</span>(<span class="dv">1</span>)</span>
+<span id="cb4-3"><a href="#cb4-3"></a>}</span></code></pre></div>
+<div class="figure" style="text-align: left">
+<img src="data:image/png;base64,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" alt="This figure shows the connection costs from one site in central Africa to all other sites. To travel to the site in South America that is indicated with the arrow, the travelling cost is 64. The distance matrix was computed using the very simple cost function that has been introduced before and is not adding any penalty." />
+<p class="caption">
+This figure shows the connection costs from one site in central Africa to all other sites. To travel to the site in South America that is indicated with the arrow, the travelling cost is 64. The distance matrix was computed using the very simple cost function that has been introduced before and is not adding any penalty.
+</p>
+</div>
+<p>Now, let’s look at a slightly more sophisticated cost function. Only sites which have environmental values (no NAs) are considered habitable. Here, suitable terrestrial sites should have a cost penalty of one dispersal, but dispersal over water sites should double the cost of dispersal.</p>
+<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1"></a>cost_function_water &lt;-<span class="st"> </span><span class="cf">function</span>(source, habitable_src, dest, habitable_dest) {</span>
+<span id="cb5-2"><a href="#cb5-2"></a>    <span class="cf">if</span> (<span class="op">!</span><span class="kw">all</span>(habitable_src, habitable_dest)) {</span>
+<span id="cb5-3"><a href="#cb5-3"></a>        <span class="kw">return</span>(<span class="dv">2</span>)</span>
+<span id="cb5-4"><a href="#cb5-4"></a>    } <span class="cf">else</span> {</span>
+<span id="cb5-5"><a href="#cb5-5"></a>        <span class="kw">return</span>(<span class="dv">1</span>)</span>
+<span id="cb5-6"><a href="#cb5-6"></a>    }</span>
+<span id="cb5-7"><a href="#cb5-7"></a>}</span></code></pre></div>
+<p><img src="data:image/png;base64,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67tSSmn01GLvXy/LVIzm9rOEerW6xNLPfPDe/ElrPn5dSin9+jdnUvr01w7d/8UNKaXR0VcPHHh4+/bPf37XK2cWjLIy1/zR4Evf2XJ99cENW/dsvSHNvQ4/k+437DlaK94//skbU0rp7ts+V30PvufulFIa+8BddkBKyXvwrWLhyfqK0z1N5WDtVKsxayoAN6zrTGls5Qut6uofW3hmPr54P0uoV6tLPBtrPn5dSnMzfirzf/vq6in91j9/7o/+/MyZt37z5s9//k+vvjo6euDJV25e8iz+5kfefPOR5XV2zc2PDP7ymx0ppZROfPumlFLnx6euw886dz/6jY3XLDoEwGKulIDftm1bVn1HR0fj6n/0ox9deFDfaK/qXLchpZE0+MTAlrV93Z3jw707Ng2OVMN3atam3i1jB7s70/hw9a3z1LPl0j6a1rl5W9fukZGR3fuGNx/s7hwf7l27aTClnqHKwe6l+pn676OnxlP33D8MOuvU6tyll/7f/97/l19/7b103a4X/uquaz+R0nvp2KP9n3thz2fWpDNvvfLisZRSuvNzN5dKb+2/7euvpfQHD/z9w9u6ru26tvjXV0dHUypWlUqlVdXN9q+/+bdS19Wzl1YqlZbV1W/+/i//y3f+x8nrH3r1x/dek06/+DdHUkp3/f7vlUoppX9+Yurc/aFXH/+9uel+YfxP3Nb9qaff+ZeX//rwf771vms//PnPXk4ppXWf/MSFDlatyrtEt9zmp61evTqrPle5XM6qz+0/q76hg6eUJicnGzr+a6+9llU/MTGRVb9169as+izPPvtsVn1u842uz91Y9eISffPUvJPu0tM9pZS6H6rex7Z709qiKKa+SKb6JnT3werdaFPvla/dtHskVd/ovsRldk6/Qz69zJRSV/9D3Rfpp3PdhpRSGtm9tig2Dsw5La9Xq3OWftuXv/7aeymlO++7a01Kn9nz1J0ppfTa179822233fblrz/3Xkrpzqf2fCal9Jl7dl2XUvqf37vnlltuueWWe743mlLa8PtdV6eUrr72kymlNPq9e2655U9e+k3+03X1LZ9IKaWT+75444033vjFfe+mdMNDO25JKaXTLw6+Ui16tzq36ol/Tun0i/euX79+/b0//jCldO19f7ItpfQvf3nH+vXr7+h9KaX0qb1f+Vx+L0BIAr5JakZ7fdI9pZQ6+06MDfV0TT/s6ukfGpvOxe6DY0P9i8y7JN0Hx4b6u6YH7uqZdbV+iX66H5ppZsO6WiNeeqvzln7dnbueemHP1K3vn9nzwlO77ryu5rw1d/3VCw/8wYaZcTb8wQN//9+2VU/YP7t9Zs4nV/TRtKvv+eGRB//T1Hvw6Ya7/urVv733mpRSOv3GP9S8466Gz/3X93+yd9unqg8+tW3vT168z8fkgClFZRmhUhTLKmtlrXOJ/kfPPz9/Ups/t+3lZz/7WVZ97lXohr65k1vf6OZzxz937lxWfe6F0IaO3+iruI1+chpd7xL9ErI27r59+7IGX8KV8h58KxDtAFw2Av5yqBHtSboD0EACvuGcuANw+Qn4BloY7V/ZuTOl9KNaxQBQRwK+UWpelp+aWPOKPZfFrc1u4Erwb2fPNrsFwMfkGqP2m+5wZfjYb/1Ws1sABHxjVC/Fw5XJGTy0ApfoG+UrO3cu+h78j7wL3zQ+B1/HZhr9VbXApRDwDTQV57NifurfAh6ABnOJvuFqXK6v+S30AFA/Av5y+MrOnbVjHgAaQ8BfPjVi3qk8AI0h4C+3r+zcOf+b7MQ8APUm4Jtk4bfVinkA6qdd76K/6667supzP89TKpUaV79r166UUrr//pTSc9///px5RbHr/vvn1T/33HNZzbCEW2+9Nav+jTfeyKovl8utU5+7G+c2kyt3/MnJyYaOn1XfUlv2MtQ39Odfc+X+PGujn5xG75n14gy+yXbdf/+8RH/u+9+fn/oAkEnAt4SaMd+sZgAIQMC3EBkPQL0I+NYy+1R+4ZvxALBM7XqTXWyiHYBL5AweAAIS8AAQkIAHgIAEPAAEJOABICABDwABCXgACEjAA0BAAh4AAhLwABCQgAeAgAQ8AATUrj82UxRFVv2qVXl/yuTWZ/WT2/yDDz6YVV8qlbLq9+3bl1V/RZmcnMyqL5fLrVOfO3iu3PGvqCez1Vb2S1/6UlZ9Szl//nxWfUvtOSuorxdn8AAQkIAHgIAEPAAEJOABICABDwABCXgACEjAA0BANT4Hn/spbQCg1dQI+EqlMm+KyAeA9uISPQAEJOABICABDwABCXgACEjAA0BAAh4AAhLwABCQgAeAgGp80U1bKJVKDa1ftSrvT5+s8Rvd/OrVq7PqWcKtt97a7BYun9HR0az63D2zXC43tH5ycjKrfuGXetWreAXN5NbfeeedWfVt7fHHH8+q37t3b1Z9o/e03Pp6cQYPAAEJeAAISMADQEACHgACEvAAEJCAB4CABDwABCTgASAgAQ8AAQl4AAhIwANAQAIeAAIS8AAQkIAHgIAEPAAEJOABICABDwABFZVK5eJFxbLKLsXdd9+dVd/R0dHQ+tWrVzdu/LZu/jLUZ/X/1a9+NWtwlvCrX/0qq75UKmXVl8vlhtbnvkxljT8xMZE1eG797bffnlXPEvbs2ZNVn7vnnDt3Lqv+wIEDy6ysb9o6gweAgAQ8AAQk4AEgIAEPAAEJeAAISMADQEACHgACEvAAEJCAB4CABDwABCTgASAgAQ8AAQl4AAhIwANAQAIeAAIS8AAQkIAHgICuanYDU15++eWs+nvuuServlwuZ9WvWpX3p0/W+LnNtFTzl6GeZpmYmMiqL5VKWfWN3nMqlUrjxs9t5vbbb8+qp45y9+QDBw40qJPmcgYPAAEJeAAISMADQEACHgACEvAAEJCAB4CABDwABCTgASAgAQ8AAQl4AAhIwANAQAIeAAIS8AAQkIAHgIAEPAAEJOABICABDwABFZVK5eJFxbLKWtm9996bVd/R0ZFVv3r16sYN3uj6rOZXMP5VV12VVb93796seurljTfeyKovlUpZ9eVyOat+cnKyofVZ/eQ2f8cdd2TVQ6p32jqDB4CABDwABCTgASAgAQ8AAQl4AAhIwANAQAIeAAIS8AAQkIAHgIAEPAAEJOABICABDwABCXgACEjAA0BAAh4AAhLwABCQgAeAgK5qdgOXyYsvvphVv2PHjqz6SqXSoOKU0uTkZEPrc/s5f/58Q8enWc6dO5dVn7unlcvlhtY39EjJbeZK8/DDDy+/+JlnnmlcJ8xwBg8AAQl4AAhIwANAQAIeAAIS8AAQkIAHgIAEPAAEVONz8EVRXP4+AIA6qhHwC7+WROQDQHtxiR4AAhLwABCQgAeAgAQ8AAQk4AEgIAEPAAEJeAAISMADQEA1vuiGlFK5XG5cfe7gq1bl/R2WO/7ExERWfalUamg9zdLoPaGhh1Wq9SVddRw/t5lG279/f1b9nj17GtRJ1TPPPNPQ8VkBZ/AAEJCAB4CABDwABCTgASAgAQ8AAQl4AAhIwANAQAIeAAIS8AAQkIAHgIAEPAAEJOABICABDwABCXgACEjAA0BAAh4AAhLwABDQVc1uoEWVy+XG1ecOXiqVsurPnz+fVZ/bT39/f1Y97WJiYiKrPnfPbOhhlVKqVCqNG3/btm1Zg+c6cOBAQ8fnCuQMHgACEvAAEJCAB4CABDwABCTgASAgAQ8AAQl4AAhIwANAQAIeAAIS8AAQkIAHgIAEPAAEJOABICABDwABCXgACEjAA0BAAh4AArqq2Q20qEql0rj6ycnJrMHPnTuXVZ87/g9+8IOseqKamJjIqi+VSln15XI5qz53T86tz+2noXKf/D179jSoE8JwBg8AAQl4AAhIwANAQAIeAAIS8AAQkIAHgIAEPAAEJOABICABDwABCXgACEjAA0BAAh4AAhLwABCQgAeAgAQ8AAQk4AEgIAEPAAEVlUrl4kXFsspa2Ze+9KWs+o6OjsbVl0qlrMFz659//vmseqg6fPhwVn3unlkulxtaPzk5mVW/Y8eOrHpotPqmrTN4AAhIwANAQAIeAAIS8AAQkIAHgIAEPAAEJOABICABDwABCXgACEjAA0BAAh4AAhLwABCQgAeAgAQ8AAQk4AEgIAEPAAEt67fli6K4DK0AwBVuOaG8TMsKeC6DorAtqCd7FPVlj2o7LtEDQEACHgACEvAAEJCAB4CABDwABOSuSAAIyBk8AAQk4AEgIAEPAAEJeAAISMADQEACHgACEvAAEJCAB4CABHyTDfcW03qH506afgyZ7ELUg1endifgm2v81GhX/1ilUqlUKge7U0ppuHfTaP9YpTLWP7rJQcQK2IWoC69ObU/AN9X4sZdGNqzrnD3l1GjXts2dKXVu3tY1emq8aa3RruxC1IVXp/Yn4Jtq7P2RrtEnZl/zGnt/+pjqXLdh5P2x5vZHG7ILURdendqfgG+q7oOVQ4cOVSqVSmVs/ROueQGtwqtT+xPwl9uF+1aqR0xn58w1sNFT42nt+ulLX+OnRrvWr21Wm7QtuxD14tWpzQn4y637YKUyc9vKcO/su1E3rOtMnes2jLx0bLzWG2CwHHYh6sKrU/u7qtkNXNm6Dw4dLYoipZS6+sdOdE9PWlvsTqlnqNLd5P5oR3Yh6sGrU/srKpVKs3sAAOrMJXoACEjAA0BAAh4AAhLwABCQgAeAgAQ8AAQk4AEgIAEPAAEJeAAISMADQEACHgACEvAAEJCAh+iGe6d/9nO4t5j9E6At40KHQN34NTmIbbi32JSGKgdb99c9W79DaEvO4AEgIAEP9TQ+sLGYMfu683DvzOSNA+Ozp/YOX5g391r6wunzFzFrqFpLHx/YWGwaTGlwU7V0wSX6vK4ucWXn/Yeidzgt6BConwpQJ2P9XSl19Y9VHw31zDwY6kkp9QxdmD79YKgnpZmqWf99selzFzF3eYssfahn7qKn/72Cri5tZcf6u2ovfW5XQJ0IeKiXWSE3x1h/19zpFwrn/pcLEbi86ZXZ4bjY0hcL+BV0dWkru2iOC3hoCJfooU7GT42mtGFd54Lpx14amTt97fquNPL+2NSjC7M6122Y9f9qTB8+Opi6tm2eN9Tg0eHFl75otyvsavq/569s95aeNLipJe/ih5AEPNRR1/q1y6iqGZnLNbJ77az3sdfuHsldet26yl3Z7oOVsf6uwU0Xe2sfqAsBD3V04Qx4KeOnRle+iBrXxac/YLa8pdetqxWsbGffiameh3rS4Ca31UEDCXiok851G1IaPbUgsjo3b+uaO33s/ZGVnW13b+lZLFYXW/qi3V5aV5e8st0HhxZdF6AeBDzUS/dD/V0ju3dMn5WOD2ysXobu7HusZ2T32gsfgds0mHoe61v22+XzFjH7xHe4d+aTaIstPaXawX+JXeWv7HDv3M/iHR2cFfwZf5oAy3SZb+qD2Mb6uy4cXbNvDa9+9CylNOci+7wbyGceLjZ9wSLm3n5ec+lTS+7qH1t4v3peV5e4snOmz54zq0OgbnxVLQAE5BI9AAR0VbMbYL6iKJrdAkA214NbjYBvRWfPnk0pTU5OVh9WD5ulH85MmXm4zLKaD2emLLPsor1ZhfZdhZprZBXacRWWXqNLXIV///d/T7QYl+gBICABDwABCXgACEjAA0BAAh4AAhLwABCQgAeAgAQ8AAQk4AEgIAEPAAEJeAAISMADQEB+D77l+DU5oB1Jk1bj1+RaUbsfJ0XR9n84WoVWYBVaQYBVuGK5RA8AAQl4AAhIwANAQAIeAAIS8AAQkIAHgIB8/gEAAnIGDwABCXgACEjAA0BAAh4AAhLwABCQgAeAgAQ8AAQk4FvJcG9RFEVR9A43u5M84wMbi2Ju69Or0jZrU6Phttocs7ZBURTFxoHx1GZbYbh3dpMLn/w22ByzV6FND4o5W6HdDwoEfOsY7t002j9WqYz1j25qp8NnfGDH7g1DlUplVuvjp0a7+scqlUqlUjnY3ewOl2Fhw222OTr7TlS7r4z1d6Wex/o622orDPcWmwZnP5z/5Lf+5pizCu15UMzbCm1/UCDgW8b4qdGubZs7U+rcvK1r9NR4s/tZts6+E9OvV9Otjx97aWTDus4mN5ZhYcNtuzmG9+3eMHSwO9VaqRY1PrDx6JbKUM+FCQue/FbfHPNXoQ0PioVbIc5BccUS8C1j7P3po6lz3YaR98ea3c9KDO/bveGxvs409v5I1+gTbXQtb2HDbbo5xgeeGO1/qJosbbMVOvtOzD2jXfjkt/rmWLAKF7TLQVFrK8Q4KK5gAp56Ge4tnlg/drA7pdR9sHLo0KHqBcr1T7Tiq9k8bdfwIob37U7bNk+ddEVZqXbmoKCZBHzLWLt++qLX+KnRrvVrm91PlvGBjcUT68dO9M1c0OvsnPlne1zLm9dwW26O4aOD1Xffp7XdVqha+OS34+ZwUNBsAr5ldK7bMPLSsfE2eut02vjAxrXvP1aZ9UI294boNliZhQ234+aY96rbdlthxsInv+02h4OCVlChdUzf4NIz1OxOcsy6LSellKr33c5MnLkNt8XVaLjtNsdQz7xe22orzO1+4ZPfBpvjwiq07UExZytEOCiubH4PHgACcokeAAIS8AAQkIAHgIAEPAAEJOABICABDwABCXgACEjAA0BAAh4AAhLwABCQgAeAgAQ8AAQk4AEgIAEPAAEJeAAISMADQEACHgACEvAAEJCAB4CA/j8fqejY2kQwlAAAAABJRU5ErkJggg==" style="display: block; margin: auto auto auto 0;" /></p>
+<p>Whether a specific site can be reached or not depends on the properties of the population or species.</p>
+</div>
+<div id="further-useful-arguments" class="section level2">
+<h2>Further useful arguments</h2>
+<p>Besides the landscape list, the cost function and the experiment folder, we can define further arguments: directions, timesteps and calculate_full_distance_matrices.</p>
+<p>The argument ‘directions’ requires an integer providing the amount of directions used to calculate distances. It can take 4, 8 or 16 as values to consider the four, eigth or 16 neighboring sites. This is the same homonimous argument used by the function <em>transition</em> in the gdistance package (gdistance::transition).</p>
+<p>The argument ‘timesteps’ requires a vector of strings and is used to name the files and to name the timesteps in the .rds landscape object created by the <em>create_input_landscape</em> function. It is not necessary to define this argument, but it helps readibility when manipulating the object.</p>
+<p>The argument ‘calculate_full_distance_matrices’ defines whether the <em>create_input_landscape</em> function will create one large distance matrix for all suitable sites (calculate_full_distance_matrices=TRUE) or a list of small distance matrices for the neigboring sites specified in ‘directions’ around each suitable site (calculate_full_distance_matrices=FALSE). The full distance matrix confers faster computing speed for the model, but requires a larger storage. The local distance matrices cause a slower computing speed, but require smaller storage. The slower speed emerges form the fact that a full distance matrix is then reconstructed by concatenating local distances matrices each timestep during a simulation run.</p>
+<p>The real geographic coordinate system can be provided which allows for the global spherical distance correction. For real landscapes, the distance unit is in meters (m). If you would use hypothetical landscapes, such as in the <a href="design_landscape.html"><strong>design_landscape vignette</strong></a>, geographic distance would be measured in units of sites.</p>
+</div>
+<div id="create-input-files" class="section level2">
+<h2>Create input files</h2>
+<p>The <em>create_input_landscape</em> function creates <em>.rds</em> files that will be used as input for <em>gen3sis</em>. The file path where the landscapes and the distance matrices of all time steps should be stored can be specified within the function.</p>
+<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1"></a><span class="kw">create_input_landscape</span>(<span class="dt">landscapes =</span> landscapes_list, <span class="dt">cost_function =</span> cost_function_water, </span>
+<span id="cb6-2"><a href="#cb6-2"></a>    <span class="dt">output_directory =</span> <span class="kw">file.path</span>(<span class="kw">tempdir</span>(), <span class="st">&quot;WorldCenter&quot;</span>), <span class="dt">timesteps =</span> <span class="kw">paste0</span>(<span class="kw">round</span>(<span class="kw">seq</span>(<span class="dv">150</span>, </span>
+<span id="cb6-3"><a href="#cb6-3"></a>        <span class="dv">100</span>, <span class="dt">length.out =</span> <span class="dv">301</span>), <span class="dv">2</span>), <span class="st">&quot;Ma&quot;</span>), <span class="dt">calculate_full_distance_matrices =</span> F)</span></code></pre></div>
+<p>Finally, don’t forget to specify the important metadata for the landscape you just created. We recommend storing it in form of a METADATA.txt file within the landscape folder.A template is automatically created by the functions <em>create_input_landscape</em>. Once the input landscape is ready, the <em>run_simulation</em> function can start the simulation using the path of the new landscape.</p>
+</div>
+
+
+
+<!-- code folding -->
+
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>

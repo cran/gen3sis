@@ -1,0 +1,608 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+
+
+
+<title>Creating input configurations in gen3sis</title>
+
+<script>// Pandoc 2.9 adds attributes on both header and div. We remove the former (to
+// be compatible with the behavior of Pandoc < 2.8).
+document.addEventListener('DOMContentLoaded', function(e) {
+  var hs = document.querySelectorAll("div.section[class*='level'] > :first-child");
+  var i, h, a;
+  for (i = 0; i < hs.length; i++) {
+    h = hs[i];
+    if (!/^h[1-6]$/i.test(h.tagName)) continue;  // it should be a header h1-h6
+    a = h.attributes;
+    while (a.length > 0) h.removeAttribute(a[0].name);
+  }
+});
+</script>
+
+
+<style type="text/css">code{white-space: pre;}</style>
+<style type="text/css" data-origin="pandoc">
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+    color: #aaaaaa;
+  }
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code span.at { color: #7d9029; } /* Attribute */
+code span.bn { color: #40a070; } /* BaseN */
+code span.bu { } /* BuiltIn */
+code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code span.ch { color: #4070a0; } /* Char */
+code span.cn { color: #880000; } /* Constant */
+code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code span.dt { color: #902000; } /* DataType */
+code span.dv { color: #40a070; } /* DecVal */
+code span.er { color: #ff0000; font-weight: bold; } /* Error */
+code span.ex { } /* Extension */
+code span.fl { color: #40a070; } /* Float */
+code span.fu { color: #06287e; } /* Function */
+code span.im { } /* Import */
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code span.op { color: #666666; } /* Operator */
+code span.ot { color: #007020; } /* Other */
+code span.pp { color: #bc7a00; } /* Preprocessor */
+code span.sc { color: #4070a0; } /* SpecialChar */
+code span.ss { color: #bb6688; } /* SpecialString */
+code span.st { color: #4070a0; } /* String */
+code span.va { color: #19177c; } /* Variable */
+code span.vs { color: #4070a0; } /* VerbatimString */
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+
+</style>
+<script>
+// apply pandoc div.sourceCode style to pre.sourceCode instead
+(function() {
+  var sheets = document.styleSheets;
+  for (var i = 0; i < sheets.length; i++) {
+    if (sheets[i].ownerNode.dataset["origin"] !== "pandoc") continue;
+    try { var rules = sheets[i].cssRules; } catch (e) { continue; }
+    for (var j = 0; j < rules.length; j++) {
+      var rule = rules[j];
+      // check if there is a div.sourceCode rule
+      if (rule.type !== rule.STYLE_RULE || rule.selectorText !== "div.sourceCode") continue;
+      var style = rule.style.cssText;
+      // check if color or background-color is set
+      if (rule.style.color === '' && rule.style.backgroundColor === '') continue;
+      // replace div.sourceCode by a pre.sourceCode rule
+      sheets[i].deleteRule(j);
+      sheets[i].insertRule('pre.sourceCode{' + style + '}', j);
+    }
+  }
+})();
+</script>
+
+
+
+<style type="text/css">body {
+background-color: #fff;
+margin: 1em auto;
+max-width: 700px;
+overflow: visible;
+padding-left: 2em;
+padding-right: 2em;
+font-family: "Open Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
+font-size: 14px;
+line-height: 1.35;
+}
+#TOC {
+clear: both;
+margin: 0 0 10px 10px;
+padding: 4px;
+width: 400px;
+border: 1px solid #CCCCCC;
+border-radius: 5px;
+background-color: #f6f6f6;
+font-size: 13px;
+line-height: 1.3;
+}
+#TOC .toctitle {
+font-weight: bold;
+font-size: 15px;
+margin-left: 5px;
+}
+#TOC ul {
+padding-left: 40px;
+margin-left: -1.5em;
+margin-top: 5px;
+margin-bottom: 5px;
+}
+#TOC ul ul {
+margin-left: -2em;
+}
+#TOC li {
+line-height: 16px;
+}
+table {
+margin: 1em auto;
+border-width: 1px;
+border-color: #DDDDDD;
+border-style: outset;
+border-collapse: collapse;
+}
+table th {
+border-width: 2px;
+padding: 5px;
+border-style: inset;
+}
+table td {
+border-width: 1px;
+border-style: inset;
+line-height: 18px;
+padding: 5px 5px;
+}
+table, table th, table td {
+border-left-style: none;
+border-right-style: none;
+}
+table thead, table tr.even {
+background-color: #f7f7f7;
+}
+p {
+margin: 0.5em 0;
+}
+blockquote {
+background-color: #f6f6f6;
+padding: 0.25em 0.75em;
+}
+hr {
+border-style: solid;
+border: none;
+border-top: 1px solid #777;
+margin: 28px 0;
+}
+dl {
+margin-left: 0;
+}
+dl dd {
+margin-bottom: 13px;
+margin-left: 13px;
+}
+dl dt {
+font-weight: bold;
+}
+ul {
+margin-top: 0;
+}
+ul li {
+list-style: circle outside;
+}
+ul ul {
+margin-bottom: 0;
+}
+pre, code {
+background-color: #f7f7f7;
+border-radius: 3px;
+color: #333;
+white-space: pre-wrap; 
+}
+pre {
+border-radius: 3px;
+margin: 5px 0px 10px 0px;
+padding: 10px;
+}
+pre:not([class]) {
+background-color: #f7f7f7;
+}
+code {
+font-family: Consolas, Monaco, 'Courier New', monospace;
+font-size: 85%;
+}
+p > code, li > code {
+padding: 2px 0px;
+}
+div.figure {
+text-align: center;
+}
+img {
+background-color: #FFFFFF;
+padding: 2px;
+border: 1px solid #DDDDDD;
+border-radius: 3px;
+border: 1px solid #CCCCCC;
+margin: 0 5px;
+}
+h1 {
+margin-top: 0;
+font-size: 35px;
+line-height: 40px;
+}
+h2 {
+border-bottom: 4px solid #f7f7f7;
+padding-top: 10px;
+padding-bottom: 2px;
+font-size: 145%;
+}
+h3 {
+border-bottom: 2px solid #f7f7f7;
+padding-top: 10px;
+font-size: 120%;
+}
+h4 {
+border-bottom: 1px solid #f7f7f7;
+margin-left: 8px;
+font-size: 105%;
+}
+h5, h6 {
+border-bottom: 1px solid #ccc;
+font-size: 105%;
+}
+a {
+color: #0033dd;
+text-decoration: none;
+}
+a:hover {
+color: #6666ff; }
+a:visited {
+color: #800080; }
+a:visited:hover {
+color: #BB00BB; }
+a[href^="http:"] {
+text-decoration: underline; }
+a[href^="https:"] {
+text-decoration: underline; }
+
+code > span.kw { color: #555; font-weight: bold; } 
+code > span.dt { color: #902000; } 
+code > span.dv { color: #40a070; } 
+code > span.bn { color: #d14; } 
+code > span.fl { color: #d14; } 
+code > span.ch { color: #d14; } 
+code > span.st { color: #d14; } 
+code > span.co { color: #888888; font-style: italic; } 
+code > span.ot { color: #007020; } 
+code > span.al { color: #ff0000; font-weight: bold; } 
+code > span.fu { color: #900; font-weight: bold; } 
+code > span.er { color: #a61717; background-color: #e3d2d2; } 
+</style>
+
+
+
+
+</head>
+
+<body>
+
+
+
+
+<h1 class="title toc-ignore">Creating input configurations in gen3sis</h1>
+<h4 class="date">09.07.2020</h4>
+
+
+
+<p>The configuration object defines the core processes of the system modeled and define some run settings. It is essential to define the model to be simulated.</p>
+<ul>
+<li>Core processes: include a customizable initialization, observer, speciation, dispersal, evolution and ecology function. Altogether, these six functions are applied as defined in the simulation engine. The possibility to customize these functions confers the high flexibility of <em>gen3sis</em> in terms of including a wide range of theoretical knowledge.</li>
+<li>Settings: include the ecological traits considered in the simulation: whether a random seed is used; allowing simulation reproducibility; start and end times of the simulation; and rules about aborting the simulation, including the maximum global or local species number permitted. Additionally, the configuration object lists the</li>
+</ul>
+<p>This vignette will guide you trough the config input object. It can be either an R object or a file, that can be easily shared and modified.</p>
+<p>Here we will:</p>
+<p><a href="#create">1. <strong>Create an empty config</strong></a> using the <em>write_config_skeleton</em> function.</p>
+<p><a href="#explore">2. <strong>Explain an example config</strong></a> using the config from <a href="introduction.html"><strong>introduction vignette</strong></a>.</p>
+<p><a href="#modify">3. <strong>Modify a config</strong></a> from within R.</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1"></a><span class="kw">library</span>(gen3sis)</span></code></pre></div>
+<div id="create" class="section level2">
+<h2>1. Create an empty config</h2>
+<p>In order to create an empty config, we use the function <em>write_config_skeleton</em> and define the output location. For that we have to define where the empty config will be stored.</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1"></a><span class="co"># get data path</span></span>
+<span id="cb2-2"><a href="#cb2-2"></a>datapath &lt;-<span class="st"> </span><span class="kw">system.file</span>(<span class="kw">file.path</span>(<span class="st">&quot;extdata&quot;</span>, <span class="st">&quot;EmptyConfig&quot;</span>), <span class="dt">package=</span><span class="st">&quot;gen3sis&quot;</span>)</span>
+<span id="cb2-3"><a href="#cb2-3"></a><span class="co"># set config_empty.R file path</span></span>
+<span id="cb2-4"><a href="#cb2-4"></a>config_file_path &lt;-<span class="st"> </span><span class="kw">file.path</span>(<span class="kw">tempdir</span>(), <span class="st">&quot;config_empty.R&quot;</span>)</span></code></pre></div>
+<p>And then create an empty config.</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1"></a><span class="co">#writes out a config skeleton</span></span>
+<span id="cb3-2"><a href="#cb3-2"></a><span class="kw">write_config_skeleton</span>(config_file_path)</span></code></pre></div>
+<p>This is how the config_empty.R looks like. We present them by main areas and each part is described briefly. For more information and a hand’s on example see next session.</p>
+<div class="infobox caution">
+<blockquote>
+<h2 id="content-of-config_empty.r"><strong>Content of config_empty.R</strong></h2>
+<p><strong><em>Metadata</em></strong></p>
+<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1"></a><span class="co"># Version: 1.0</span></span>
+<span id="cb4-2"><a href="#cb4-2"></a><span class="co"># Author:</span></span>
+<span id="cb4-3"><a href="#cb4-3"></a><span class="co"># Date:</span></span>
+<span id="cb4-4"><a href="#cb4-4"></a><span class="co"># Landscape:</span></span>
+<span id="cb4-5"><a href="#cb4-5"></a><span class="co"># Publications:</span></span>
+<span id="cb4-6"><a href="#cb4-6"></a><span class="co"># Description:</span></span></code></pre></div>
+<p><strong><em>Settings</em></strong></p>
+<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1"></a><span class="co"># set the random seed for the simulation.</span></span>
+<span id="cb5-2"><a href="#cb5-2"></a>random_seed =<span class="st"> </span><span class="ot">NA</span></span>
+<span id="cb5-3"><a href="#cb5-3"></a><span class="co"># set the starting time step or leave NA to use the earliest/highest time-step.</span></span>
+<span id="cb5-4"><a href="#cb5-4"></a>start_time =<span class="st"> </span><span class="ot">NA</span></span>
+<span id="cb5-5"><a href="#cb5-5"></a><span class="co"># set the end time step or leave as NA to use the latest/lowest time-step (0).</span></span>
+<span id="cb5-6"><a href="#cb5-6"></a>end_time =<span class="st"> </span><span class="ot">NA</span></span>
+<span id="cb5-7"><a href="#cb5-7"></a><span class="co"># maximum total number of species in the simulation before it is aborted.</span></span>
+<span id="cb5-8"><a href="#cb5-8"></a>max_number_of_species =<span class="st"> </span><span class="dv">25000</span></span>
+<span id="cb5-9"><a href="#cb5-9"></a><span class="co"># maximum number of species within one cell before the simulation is aborted.</span></span>
+<span id="cb5-10"><a href="#cb5-10"></a>max_number_of_coexisting_species =<span class="st"> </span><span class="dv">2500</span></span>
+<span id="cb5-11"><a href="#cb5-11"></a><span class="co"># a list of traits to include with each species.</span></span>
+<span id="cb5-12"><a href="#cb5-12"></a><span class="co"># a &quot;dispersal&quot; trait is implicitly added in any case.</span></span>
+<span id="cb5-13"><a href="#cb5-13"></a>trait_names =<span class="st"> </span><span class="kw">c</span>(<span class="st">&quot;dispersal&quot;</span>)</span>
+<span id="cb5-14"><a href="#cb5-14"></a><span class="co"># ranges to scale the input environments with:</span></span>
+<span id="cb5-15"><a href="#cb5-15"></a><span class="co"># not listed variable:         no scaling takes place</span></span>
+<span id="cb5-16"><a href="#cb5-16"></a><span class="co"># listed, set to NA:           env. variable will be scaled from [min, max] to [0, 1]</span></span>
+<span id="cb5-17"><a href="#cb5-17"></a><span class="co"># listed with a given range r: env. variable will be scaled from [r1, r2] to [0, 1]</span></span>
+<span id="cb5-18"><a href="#cb5-18"></a>environmental_ranges =<span class="st"> </span><span class="kw">list</span>( )</span></code></pre></div>
+<p><strong><em>Observer</em></strong></p>
+<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1"></a>end_of_timestep_observer =<span class="st"> </span><span class="cf">function</span>(data, vars, config){</span>
+<span id="cb6-2"><a href="#cb6-2"></a> <span class="co"># the list of all species can be found in data$all_species.</span></span>
+<span id="cb6-3"><a href="#cb6-3"></a> <span class="co"># the current landscape can be found in data$landscape.</span></span>
+<span id="cb6-4"><a href="#cb6-4"></a>}</span></code></pre></div>
+<p><strong><em>Initialization</em></strong></p>
+<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1"></a><span class="co"># the initial abundance of a newly colonized cell, both during setup and later when </span></span>
+<span id="cb7-2"><a href="#cb7-2"></a><span class="co"># colonizing a cell during the dispersal.</span></span>
+<span id="cb7-3"><a href="#cb7-3"></a>initial_abundance =<span class="st"> </span><span class="dv">1</span></span>
+<span id="cb7-4"><a href="#cb7-4"></a><span class="co"># place species in the landscape:</span></span>
+<span id="cb7-5"><a href="#cb7-5"></a>create_ancestor_species &lt;-<span class="st"> </span><span class="cf">function</span>(landscape, config) {</span>
+<span id="cb7-6"><a href="#cb7-6"></a><span class="kw">stop</span>(<span class="st">&quot;create the initial species here&quot;</span>)</span>
+<span id="cb7-7"><a href="#cb7-7"></a>}</span></code></pre></div>
+<p><strong><em>Core Processes</em></strong></p>
+<div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1"></a><span class="co">### Dispersal</span></span>
+<span id="cb8-2"><a href="#cb8-2"></a><span class="co"># the maximum range to consider when calculating the distances from local distance inputs.</span></span>
+<span id="cb8-3"><a href="#cb8-3"></a>max_dispersal &lt;-<span class="st"> </span><span class="ot">Inf</span></span>
+<span id="cb8-4"><a href="#cb8-4"></a><span class="co"># returns n dispersal values.</span></span>
+<span id="cb8-5"><a href="#cb8-5"></a>get_dispersal_values &lt;-<span class="st"> </span><span class="cf">function</span>(n, species, landscape, config) {</span>
+<span id="cb8-6"><a href="#cb8-6"></a> <span class="kw">stop</span>(<span class="st">&quot;calculate dispersal values here&quot;</span>)</span>
+<span id="cb8-7"><a href="#cb8-7"></a>}</span>
+<span id="cb8-8"><a href="#cb8-8"></a><span class="co">### Speciation</span></span>
+<span id="cb8-9"><a href="#cb8-9"></a><span class="co"># threshold for genetic distance after which a speciation event takes place.</span></span>
+<span id="cb8-10"><a href="#cb8-10"></a>divergence_threshold =<span class="st"> </span><span class="ot">NULL</span></span>
+<span id="cb8-11"><a href="#cb8-11"></a><span class="co"># factor by which the divergence is increased between geographically isolated population.</span></span>
+<span id="cb8-12"><a href="#cb8-12"></a><span class="co"># can also be a matrix between the different population clusters.</span></span>
+<span id="cb8-13"><a href="#cb8-13"></a>get_divergence_factor &lt;-<span class="st"> </span><span class="cf">function</span>(species, cluster_indices, landscape, config) {</span>
+<span id="cb8-14"><a href="#cb8-14"></a> <span class="kw">stop</span>(<span class="st">&quot;calculate divergence factor here&quot;</span>)</span>
+<span id="cb8-15"><a href="#cb8-15"></a>}</span>
+<span id="cb8-16"><a href="#cb8-16"></a><span class="co">### Evolution</span></span>
+<span id="cb8-17"><a href="#cb8-17"></a><span class="co"># mutate the traits of a species and return the new traits matrix.</span></span>
+<span id="cb8-18"><a href="#cb8-18"></a>apply_evolution &lt;-<span class="st"> </span><span class="cf">function</span>(species, cluster_indices, landscape, config) {</span>
+<span id="cb8-19"><a href="#cb8-19"></a> <span class="kw">stop</span>(<span class="st">&quot;mutate species traits here&quot;</span>)</span>
+<span id="cb8-20"><a href="#cb8-20"></a>}</span>
+<span id="cb8-21"><a href="#cb8-21"></a><span class="co">### Ecology</span></span>
+<span id="cb8-22"><a href="#cb8-22"></a><span class="co"># called for every cell with all occurring species, this function calculates abundances and/or who survives for each sites</span></span>
+<span id="cb8-23"><a href="#cb8-23"></a><span class="co"># returns a vector of abundances.</span></span>
+<span id="cb8-24"><a href="#cb8-24"></a><span class="co"># set the abundance to 0 for every species supposed to die.</span></span>
+<span id="cb8-25"><a href="#cb8-25"></a>apply_ecology &lt;-<span class="st"> </span><span class="cf">function</span>(abundance, traits, environment, config) {</span>
+<span id="cb8-26"><a href="#cb8-26"></a> <span class="kw">stop</span>(<span class="st">&quot;calculate species abundances and deaths here&quot;</span>)</span>
+<span id="cb8-27"><a href="#cb8-27"></a>}</span></code></pre></div>
+</blockquote>
+</div>
+<p>Note that the main core functions have stop warnings by default, this forces the configuration to be edited according to the rules and assumptions (model) that is to be created. You can do this from scratch or by modifying an existing config.</p>
+</div>
+<div id="explore" class="section level2">
+<h2>2. Explain example config</h2>
+<p>Here we will go bit by bit of the config used at the <a href="introduction.html"><strong>introduction vignette</strong></a> vignette. We will follow the structure presented above.</p>
+<div id="content-of-config_.empty_worldcenter.r" class="section level3">
+<h3><strong>Content of config_.empty_worldcenter.R</strong></h3>
+</div>
+<div id="metadata" class="section level3">
+<h3><strong><em>Metadata</em></strong></h3>
+<p>The first section of the config file contains metadata. It informs the user when and by whom the file has been created, which landscape it was made for and informs about associated publications.</p>
+<blockquote>
+<div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1"></a><span class="co"># Version: 1.0</span></span>
+<span id="cb9-2"><a href="#cb9-2"></a><span class="co"># Author: Oskar Hagen</span></span>
+<span id="cb9-3"><a href="#cb9-3"></a><span class="co"># Date: 1.7.2020</span></span>
+<span id="cb9-4"><a href="#cb9-4"></a><span class="co"># Landscape: WorldCenter</span></span>
+<span id="cb9-5"><a href="#cb9-5"></a><span class="co"># Publications: R-package gen3sis</span></span>
+<span id="cb9-6"><a href="#cb9-6"></a><span class="co"># Description: Example config used at the introduction vignette and similar to case study global configs in Hagen et al. 2020.</span></span>
+<span id="cb9-7"><a href="#cb9-7"></a><span class="co"># O. Hagen, B. Flück, F. Fopp, J.S. Cabral, F. Hartig, M. Pontarp, T.F. Rangel, L. Pellissier. gen3sis: The GENeral Engine for Eco-Evolutionary SImulationS on the origins of biodiversity.</span></span></code></pre></div>
+</blockquote>
+</div>
+<div id="settings" class="section level3">
+<h3><strong><em>Settings</em></strong></h3>
+<p>We start our simulation with the first avaiable timestep and end it a the latest available time-step at the landscape, thus <em>start_time</em> and <em>end_time</em> are set to NA. We limit the maximum total number of species alive in a simulation to 50000 with <em>max_number_of_species</em> and the maximum number of species within one site to 10000 with <em>max_number_of_coexisting_species</em>. Like so, we stop simulations that could possible go off hand and generate too many species. We define which traits we will consider in our simulation with <em>traits_names</em>, in our example, species only have a dispersal ability and a optimum temperature traits. For our model to work, we normalize the environmental values, according to the range informed at <em>environmental_ranges</em>.</p>
+<blockquote>
+<div class="sourceCode" id="cb10"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1"></a>random_seed =<span class="st"> </span><span class="dv">666</span></span>
+<span id="cb10-2"><a href="#cb10-2"></a>start_time =<span class="st"> </span><span class="ot">NA</span></span>
+<span id="cb10-3"><a href="#cb10-3"></a>end_time =<span class="st"> </span><span class="ot">NA</span></span>
+<span id="cb10-4"><a href="#cb10-4"></a>max_number_of_species =<span class="st"> </span><span class="dv">50000</span></span>
+<span id="cb10-5"><a href="#cb10-5"></a>max_number_of_coexisting_species =<span class="st"> </span><span class="dv">10000</span></span>
+<span id="cb10-6"><a href="#cb10-6"></a>trait_names =<span class="st"> </span><span class="kw">c</span>(<span class="st">&quot;temp&quot;</span>,  <span class="st">&quot;dispersal&quot;</span>)</span>
+<span id="cb10-7"><a href="#cb10-7"></a>environmental_ranges =<span class="st"> </span><span class="kw">list</span>(<span class="st">&quot;temp&quot;</span> =<span class="st"> </span><span class="kw">c</span>(<span class="op">-</span><span class="dv">45</span>, <span class="dv">55</span>), <span class="st">&quot;area&quot;</span>=<span class="kw">c</span>(<span class="dv">101067</span>, <span class="dv">196949</span>), <span class="st">&quot;prec&quot;</span>=<span class="kw">c</span>(<span class="dv">1</span>,<span class="fl">0.5</span>))</span></code></pre></div>
+</blockquote>
+</div>
+<div id="observer" class="section level3">
+<h3><strong><em>Observer</em></strong></h3>
+<p>With the observer function, changes over time in any abiotic or biotic information of the virtual world can be recorded by defining the outputs that are saved at specified time steps, and results can be saved and plotted in real-time as the model runs. In our observer function we save the species and plot the richness. Like so, plots are printed as the simulation progresses and also saved inside the plot folder inside output.</p>
+<blockquote>
+<div class="sourceCode" id="cb11"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1"></a>end_of_timestep_observer =<span class="st"> </span><span class="cf">function</span>(data, vars, config){</span>
+<span id="cb11-2"><a href="#cb11-2"></a> <span class="kw">save_species</span>()</span>
+<span id="cb11-3"><a href="#cb11-3"></a> <span class="kw">plot_richness</span>(data<span class="op">$</span>all_species, data<span class="op">$</span>landscape)</span>
+<span id="cb11-4"><a href="#cb11-4"></a>}</span></code></pre></div>
+</blockquote>
+<p>Combined plots can be generated inside the observer function as for example:</p>
+<blockquote>
+<div class="sourceCode" id="cb12"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1"></a>end_of_timestep_observer =<span class="st"> </span><span class="cf">function</span>(data, vars, config){</span>
+<span id="cb12-2"><a href="#cb12-2"></a>   <span class="kw">par</span>(<span class="dt">mfrow=</span><span class="kw">c</span>(<span class="dv">2</span>,<span class="dv">3</span>))</span>
+<span id="cb12-3"><a href="#cb12-3"></a>   <span class="kw">plot_raster_single</span>(data<span class="op">$</span>landscape<span class="op">$</span>environment[,<span class="st">&quot;temp&quot;</span>], data<span class="op">$</span>landscape, <span class="st">&quot;temp&quot;</span>, <span class="ot">NA</span>)</span>
+<span id="cb12-4"><a href="#cb12-4"></a>   <span class="kw">plot_raster_single</span>(data<span class="op">$</span>landscape<span class="op">$</span>environment[,<span class="st">&quot;prec&quot;</span>], data<span class="op">$</span>landscape, <span class="st">&quot;prec&quot;</span>, <span class="ot">NA</span>)</span>
+<span id="cb12-5"><a href="#cb12-5"></a>   <span class="kw">plot_raster_single</span>(data<span class="op">$</span>landscape<span class="op">$</span>environment[,<span class="st">&quot;area&quot;</span>], data<span class="op">$</span>landscape, <span class="st">&quot;area&quot;</span>, <span class="ot">NA</span>)</span>
+<span id="cb12-6"><a href="#cb12-6"></a>   <span class="kw">plot_richness</span>(data<span class="op">$</span>all_species, data<span class="op">$</span>landscape)</span>
+<span id="cb12-7"><a href="#cb12-7"></a>   <span class="kw">plot_species_presence</span>(data<span class="op">$</span>all_species[[<span class="dv">1</span>]], data<span class="op">$</span>landscape)</span>
+<span id="cb12-8"><a href="#cb12-8"></a>   <span class="kw">plot</span>(<span class="dv">0</span>,<span class="dt">type=</span><span class="st">&#39;n&#39;</span>,<span class="dt">axes=</span><span class="ot">FALSE</span>,<span class="dt">ann=</span><span class="ot">FALSE</span>)</span>
+<span id="cb12-9"><a href="#cb12-9"></a>   <span class="kw">mtext</span>(<span class="st">&quot;STATUS&quot;</span>,<span class="dv">1</span>)</span>
+<span id="cb12-10"><a href="#cb12-10"></a>}</span></code></pre></div>
+</blockquote>
+</div>
+<div id="initialization" class="section level3">
+<h3><strong><em>Initialization</em></strong></h3>
+<p>The initialization function creates the ancestor species at the start of the simulation. Users can define the number of ancestor species, their distribution within the ancient landscape and their trait values. In our example, the initial abundance of the ancestor species as well as the abundance of species on newly colonized sites is 1. We set one single ancestor species spread across the entire globe, i.e. between longitudes [-180, 180] and latitudes [-90, 90]. We set the <strong>temp</strong> trait of each population of the initial species to the environmental temperature. This means, that each population is adapted to the local conditions, as we will see later on the ecology function. Dispersal is set to one, since it is not ranging. The function <em>create_ancestor_species</em> is expected to return a list of new species, i.e. the ancestor(s) one(s).</p>
+<blockquote>
+<div class="sourceCode" id="cb13"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1"></a>initial_abundance =<span class="st"> </span><span class="dv">1</span></span>
+<span id="cb13-2"><a href="#cb13-2"></a>create_ancestor_species &lt;-<span class="st"> </span><span class="cf">function</span>(landscape, config) {</span>
+<span id="cb13-3"><a href="#cb13-3"></a> range &lt;-<span class="st"> </span><span class="kw">c</span>(<span class="op">-</span><span class="dv">180</span>, <span class="dv">180</span>, <span class="dv">-90</span>, <span class="dv">90</span>)</span>
+<span id="cb13-4"><a href="#cb13-4"></a> co &lt;-<span class="st"> </span>landscape<span class="op">$</span>coordinates</span>
+<span id="cb13-5"><a href="#cb13-5"></a> selection &lt;-<span class="st"> </span>co[, <span class="st">&quot;x&quot;</span>] <span class="op">&gt;=</span><span class="st"> </span>range[<span class="dv">1</span>] <span class="op">&amp;</span></span>
+<span id="cb13-6"><a href="#cb13-6"></a><span class="st">   </span>co[, <span class="st">&quot;x&quot;</span>] <span class="op">&lt;=</span><span class="st"> </span>range[<span class="dv">2</span>] <span class="op">&amp;</span></span>
+<span id="cb13-7"><a href="#cb13-7"></a><span class="st">   </span>co[, <span class="st">&quot;y&quot;</span>] <span class="op">&gt;=</span><span class="st"> </span>range[<span class="dv">3</span>] <span class="op">&amp;</span></span>
+<span id="cb13-8"><a href="#cb13-8"></a><span class="st">   </span>co[, <span class="st">&quot;y&quot;</span>] <span class="op">&lt;=</span><span class="st"> </span>range[<span class="dv">4</span>]</span>
+<span id="cb13-9"><a href="#cb13-9"></a> initial_cells &lt;-<span class="st"> </span><span class="kw">rownames</span>(co)[selection]</span>
+<span id="cb13-10"><a href="#cb13-10"></a> new_species &lt;-<span class="st"> </span><span class="kw">create_species</span>(initial_cells, config)</span>
+<span id="cb13-11"><a href="#cb13-11"></a> <span class="co">#set local adaptation to max optimal temp equals local temp</span></span>
+<span id="cb13-12"><a href="#cb13-12"></a> new_species<span class="op">$</span>traits[ , <span class="st">&quot;temp&quot;</span>] &lt;-<span class="st"> </span>landscape<span class="op">$</span>environment[,<span class="st">&quot;temp&quot;</span>]</span>
+<span id="cb13-13"><a href="#cb13-13"></a> new_species<span class="op">$</span>traits[ , <span class="st">&quot;dispersal&quot;</span>] &lt;-<span class="st"> </span><span class="dv">1</span></span>
+<span id="cb13-14"><a href="#cb13-14"></a> <span class="kw">return</span>(<span class="kw">list</span>(new_species))</span>
+<span id="cb13-15"><a href="#cb13-15"></a>}</span></code></pre></div>
+</blockquote>
+</div>
+<div id="core-processes" class="section level3">
+<h3><strong><em>Core Processes</em></strong></h3>
+<div id="dispersal" class="section level4">
+<h4><strong><em>Dispersal</em></strong></h4>
+<p>The dispersal function iterates over all species populations and determines the connectivity between sites and the colonization of new sites in the grid cell. In our example, the dispersal of all species is the same and is stochastic, following a weibull distribution with shape 6 and scale 999. For different dispersal between species, the dispersal trait should be used. Note that dispersal can be made deterministic by making the function return a fix value.</p>
+<blockquote>
+<div class="sourceCode" id="cb14"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1"></a>get_dispersal_values &lt;-<span class="st"> </span><span class="cf">function</span>(n, species, landscape, config) {</span>
+<span id="cb14-2"><a href="#cb14-2"></a> values &lt;-<span class="st"> </span><span class="kw">rweibull</span>(n, <span class="dt">shape =</span> <span class="dv">6</span>, <span class="dt">scale =</span> <span class="dv">999</span>)</span>
+<span id="cb14-3"><a href="#cb14-3"></a> <span class="kw">return</span>(values) }</span></code></pre></div>
+</blockquote>
+<p>The histogram of 100 draws from the dispersal function used above.</p>
+<blockquote>
+<div class="sourceCode" id="cb15"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1"></a>n &lt;-<span class="st"> </span><span class="dv">100</span></span>
+<span id="cb15-2"><a href="#cb15-2"></a><span class="kw">hist</span>(<span class="kw">rweibull</span>(n, <span class="dt">shape =</span> <span class="dv">6</span>, <span class="dt">scale =</span> <span class="dv">999</span>), <span class="dt">col=</span><span class="st">&quot;black&quot;</span>)</span></code></pre></div>
+<p><img src="data:image/png;base64,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" /><!-- --></p>
+</blockquote>
+</div>
+</div>
+<div id="speciation" class="section level3">
+<h3><strong><em>Speciation</em></strong></h3>
+<p>The speciation iterates over every species separately, registers populations’ geographic occupancy (species range), and determines when geographic isolation between population clusters is higher than a user-defined threshold, triggering a lineage splitting event of cladogenesis. The clustering of occupied sites is based on the species’ dispersal capacity and the landscape connection costs. Over time, disconnected clusters gradually accumulate incompatibility, analogous to genetic differentiation. When the divergence between clusters is above the speciation threshold, those clusters become two or more distinct species, and a divergence matrix reset follows. On the other hand, if geographic clusters come into secondary contact before the speciation occurs, they coalesce and incompatibilities are gradually reduced to zero. In our example, speciation takes place after 12 time-steps of isolation and the divergence increase is the same for all species as indicated by <em>get_divergence_threshold</em>. &gt; &gt;<code>r &gt;divergence_threshold = 12 #this is 2Myrs &gt;get_divergence_factor &lt;- function(species, cluster_indices, landscape, config) { &gt;  return(1) } &gt;</code></p>
+</div>
+<div id="evolution" class="section level3">
+<h3><strong><em>Evolution</em></strong></h3>
+<p>In the function bellow, clustered populations (exchanging genes) had their trait homogenized and weighted by abundance, meaning that a trait of a population that is doing well in a site, as dictated by the ecology function, will contribute more to the average trait of a cluster. Later, populations mutate based on a normal distribution with standard deviation 0.001, possibly increasing or decreasing species optimum temperature.</p>
+<blockquote>
+<div class="sourceCode" id="cb16"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1"></a><span class="co"># mutate the traits of a species and return the new traits matrix</span></span>
+<span id="cb16-2"><a href="#cb16-2"></a>apply_evolution &lt;-<span class="st"> </span><span class="cf">function</span>(species, cluster_indices, landscape, config) {</span>
+<span id="cb16-3"><a href="#cb16-3"></a> trait_evolutionary_power &lt;-<span class="st"> </span><span class="fl">0.001</span></span>
+<span id="cb16-4"><a href="#cb16-4"></a> traits &lt;-<span class="st"> </span>species[[<span class="st">&quot;traits&quot;</span>]]</span>
+<span id="cb16-5"><a href="#cb16-5"></a> cells &lt;-<span class="st"> </span><span class="kw">rownames</span>(traits)</span>
+<span id="cb16-6"><a href="#cb16-6"></a> <span class="co">#homogenize trait based on abundance</span></span>
+<span id="cb16-7"><a href="#cb16-7"></a> <span class="cf">for</span>(cluster_index <span class="cf">in</span> <span class="kw">unique</span>(cluster_indices)){</span>
+<span id="cb16-8"><a href="#cb16-8"></a>   cells_cluster &lt;-<span class="st"> </span>cells[<span class="kw">which</span>(cluster_indices <span class="op">==</span><span class="st"> </span>cluster_index)]</span>
+<span id="cb16-9"><a href="#cb16-9"></a>   mean_abd &lt;-<span class="st"> </span><span class="kw">mean</span>(species<span class="op">$</span>abundance[cells_cluster])</span>
+<span id="cb16-10"><a href="#cb16-10"></a>   weight_abd &lt;-<span class="st"> </span>species<span class="op">$</span>abundance[cells_cluster]<span class="op">/</span>mean_abd</span>
+<span id="cb16-11"><a href="#cb16-11"></a>   traits[cells_cluster, <span class="st">&quot;temp&quot;</span>] &lt;-<span class="st"> </span><span class="kw">mean</span>(traits[cells_cluster, <span class="st">&quot;temp&quot;</span>]<span class="op">*</span>weight_abd)</span>
+<span id="cb16-12"><a href="#cb16-12"></a> }</span>
+<span id="cb16-13"><a href="#cb16-13"></a> <span class="co">#mutations</span></span>
+<span id="cb16-14"><a href="#cb16-14"></a> mutation_deltas &lt;-<span class="kw">rnorm</span>(<span class="kw">length</span>(traits[, <span class="st">&quot;temp&quot;</span>]), <span class="dt">mean=</span><span class="dv">0</span>, <span class="dt">sd=</span>trait_evolutionary_power)</span>
+<span id="cb16-15"><a href="#cb16-15"></a> traits[, <span class="st">&quot;temp&quot;</span>] &lt;-<span class="st"> </span>traits[, <span class="st">&quot;temp&quot;</span>] <span class="op">+</span><span class="st"> </span>mutation_deltas</span>
+<span id="cb16-16"><a href="#cb16-16"></a> <span class="kw">return</span>(traits)</span>
+<span id="cb16-17"><a href="#cb16-17"></a>}</span></code></pre></div>
+</blockquote>
+</div>
+<div id="ecology" class="section level3">
+<h3><strong><em>Ecology</em></strong></h3>
+<p>The ecology function determines the abundance or presence of the populations in occupied sites of each species. The function iterates over all occupied sites and updates the species population abundances or presences on the basis of local environmental values, updated co-occurrence patterns and species traits. The function takes as input the species abundance, species trait, species divergence and clusters, and the landscape values. In our example, we calculate abundances in a site based on how close the species is to the site temperature. We scale the values to avoid small numbers and apply a carrying capacity based on aridity and temperature corrected by the area of a site. If abundances are below 1, species are considered extinct, if total abundance in a site is above the carrying capacity, small abundances are removed progressively and randomly distributed across the present species until total abundance is smaller or equal to the carrying capacity.</p>
+<blockquote>
+<div class="sourceCode" id="cb17"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1"></a>apply_ecology &lt;-<span class="st"> </span><span class="cf">function</span>(abundance, traits, landscape, config) {</span>
+<span id="cb17-2"><a href="#cb17-2"></a> abundance_scale =<span class="st"> </span><span class="dv">10</span></span>
+<span id="cb17-3"><a href="#cb17-3"></a> abundance_threshold =<span class="st"> </span><span class="dv">1</span></span>
+<span id="cb17-4"><a href="#cb17-4"></a> <span class="co">#abundance treashold</span></span>
+<span id="cb17-5"><a href="#cb17-5"></a> survive &lt;-<span class="st"> </span>abundance<span class="op">&gt;=</span>abundance_threshold</span>
+<span id="cb17-6"><a href="#cb17-6"></a> abundance[<span class="op">!</span>survive] &lt;-<span class="st"> </span><span class="dv">0</span></span>
+<span id="cb17-7"><a href="#cb17-7"></a> abundance &lt;-<span class="st"> </span>(( <span class="dv">1</span><span class="op">-</span><span class="kw">abs</span>( traits[, <span class="st">&quot;temp&quot;</span>] <span class="op">-</span><span class="st"> </span>landscape[, <span class="st">&quot;temp&quot;</span>]))<span class="op">*</span>abundance_scale)<span class="op">*</span><span class="kw">as.numeric</span>(survive)</span>
+<span id="cb17-8"><a href="#cb17-8"></a> <span class="co">#abundance thhreashold</span></span>
+<span id="cb17-9"><a href="#cb17-9"></a> abundance[abundance<span class="op">&lt;</span>abundance_threshold] &lt;-<span class="st"> </span><span class="dv">0</span></span>
+<span id="cb17-10"><a href="#cb17-10"></a> k &lt;-<span class="st"> </span>((landscape[,<span class="st">&quot;area&quot;</span>]<span class="op">*</span>(landscape[,<span class="st">&quot;prec&quot;</span>]<span class="op">+</span><span class="fl">0.1</span>)<span class="op">*</span>(landscape[,<span class="st">&quot;temp&quot;</span>]<span class="op">+</span><span class="fl">0.1</span>))<span class="op">*</span>abundance_scale<span class="op">^</span><span class="dv">2</span>)</span>
+<span id="cb17-11"><a href="#cb17-11"></a> total_ab &lt;-<span class="st"> </span><span class="kw">sum</span>(abundance)</span>
+<span id="cb17-12"><a href="#cb17-12"></a> subtract &lt;-<span class="st"> </span>total_ab<span class="op">-</span>k</span>
+<span id="cb17-13"><a href="#cb17-13"></a> <span class="cf">if</span> (subtract <span class="op">&gt;</span><span class="st"> </span><span class="dv">0</span>) {</span>
+<span id="cb17-14"><a href="#cb17-14"></a>   <span class="co"># print(paste(&quot;should:&quot;, k, &quot;is:&quot;, total_ab, &quot;DIFF:&quot;, round(subtract,0) ))</span></span>
+<span id="cb17-15"><a href="#cb17-15"></a>   <span class="cf">while</span> (total_ab<span class="op">&gt;</span>k){</span>
+<span id="cb17-16"><a href="#cb17-16"></a>     alive &lt;-<span class="st"> </span>abundance<span class="op">&gt;</span><span class="dv">0</span></span>
+<span id="cb17-17"><a href="#cb17-17"></a>     loose &lt;-<span class="st"> </span><span class="kw">sample</span>(<span class="dv">1</span><span class="op">:</span><span class="kw">length</span>(abundance[alive]),<span class="dv">1</span>)</span>
+<span id="cb17-18"><a href="#cb17-18"></a>     abundance[alive][loose] &lt;-<span class="st"> </span>abundance[alive][loose]<span class="op">-</span><span class="dv">1</span></span>
+<span id="cb17-19"><a href="#cb17-19"></a>     total_ab &lt;-<span class="st"> </span><span class="kw">sum</span>(abundance)</span>
+<span id="cb17-20"><a href="#cb17-20"></a>   }</span>
+<span id="cb17-21"><a href="#cb17-21"></a>   <span class="co">#set negative abundances to zero</span></span>
+<span id="cb17-22"><a href="#cb17-22"></a>   abundance[<span class="op">!</span>alive] &lt;-<span class="st"> </span><span class="dv">0</span></span>
+<span id="cb17-23"><a href="#cb17-23"></a> }</span>
+<span id="cb17-24"><a href="#cb17-24"></a> <span class="kw">return</span>(abundance)</span>
+<span id="cb17-25"><a href="#cb17-25"></a>}</span></code></pre></div>
+</blockquote>
+</div>
+</div>
+<div id="modify" class="section level2">
+<h2>3. Modify a config</h2>
+<p>A configuration object can be modified by editing a file or the config object in R. Here we will load the config_worldcenter.R as an R object and modify it’s random seed.</p>
+<div class="sourceCode" id="cb18"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1"></a><span class="co"># get data path</span></span>
+<span id="cb18-2"><a href="#cb18-2"></a>datapath &lt;-<span class="st"> </span><span class="kw">system.file</span>(<span class="kw">file.path</span>(<span class="st">&quot;extdata&quot;</span>, <span class="st">&quot;WorldCenter&quot;</span>), <span class="dt">package=</span><span class="st">&quot;gen3sis&quot;</span>)</span>
+<span id="cb18-3"><a href="#cb18-3"></a><span class="co"># creates config object from config file</span></span>
+<span id="cb18-4"><a href="#cb18-4"></a>config_object &lt;-<span class="st"> </span><span class="kw">create_input_config</span>(<span class="kw">file.path</span>(datapath, <span class="st">&quot;config/config_worldcenter.R&quot;</span>))</span>
+<span id="cb18-5"><a href="#cb18-5"></a><span class="co"># modify random seed</span></span>
+<span id="cb18-6"><a href="#cb18-6"></a>config_object<span class="op">$</span>gen3sis<span class="op">$</span>general<span class="op">$</span>random_seed &lt;-<span class="st"> </span><span class="dv">2020</span></span></code></pre></div>
+<p>Like so, functions and parameters can be conveniently changed and simulated in gen3sis. Remember that <em>run_simulation</em> works either with a path to a config file or config object, so we can run the old and the new modified config.</p>
+<p>Before using a new config, you can test if it is a valid one. If the function <em>verify_config</em> returns TRUE, you are good to go.</p>
+<div class="sourceCode" id="cb19"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1"></a><span class="kw">verify_config</span>(config_object)</span>
+<span id="cb19-2"><a href="#cb19-2"></a><span class="co">#&gt; [1] TRUE</span></span></code></pre></div>
+<div class="sourceCode" id="cb20"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1"></a><span class="co"># run simulation by indicating config file path</span></span>
+<span id="cb20-2"><a href="#cb20-2"></a>sim_old &lt;-<span class="st"> </span><span class="kw">run_simulation</span>(<span class="dt">config =</span> <span class="kw">file.path</span>(datapath, <span class="st">&quot;config/config_worldcenter.R&quot;</span>), </span>
+<span id="cb20-3"><a href="#cb20-3"></a>               <span class="dt">landscape =</span> <span class="kw">file.path</span>(datapath, <span class="st">&quot;landscape&quot;</span>),</span>
+<span id="cb20-4"><a href="#cb20-4"></a>               <span class="dt">output_directory=</span><span class="kw">tempdir</span>())</span>
+<span id="cb20-5"><a href="#cb20-5"></a></span>
+<span id="cb20-6"><a href="#cb20-6"></a><span class="co"># run simulation by indicating config object</span></span>
+<span id="cb20-7"><a href="#cb20-7"></a>sim_new &lt;-<span class="st"> </span><span class="kw">run_simulation</span>(<span class="dt">config =</span> config_object, </span>
+<span id="cb20-8"><a href="#cb20-8"></a>               <span class="dt">landscape =</span> <span class="kw">file.path</span>(datapath, <span class="st">&quot;landscape&quot;</span>),</span>
+<span id="cb20-9"><a href="#cb20-9"></a>               <span class="dt">output_directory=</span><span class="kw">tempdir</span>())</span></code></pre></div>
+</div>
+
+
+
+<!-- code folding -->
+
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>
