@@ -9,6 +9,9 @@ knitr::opts_chunk$set(
   results='hold'
 )
 
+## ----tidy=T, out.width='70%', echo=F, fig.cap='*gen3sis*: **gen**eral **e**ngine for **e**co-**e**volutionary **si**mulation**s**', fig.margin=F----
+knitr::include_graphics("../inst/logo/gen3sis_logo.png")
+
 ## ----setup, message=F---------------------------------------------------------
 library(gen3sis)
 

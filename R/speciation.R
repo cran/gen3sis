@@ -1,34 +1,34 @@
 # Copyright (c) 2020, ETH Zurich
 
-#' get_divergence_factor allows the user to define the rate at which geographic clusters accumulate differentiation
+#' Allows the user to define the rate at which geographic clusters accumulate differentiation
 #' with each other.
 #'
-#' @details this function determines the increase in divergence between separated clusters of a species. This function
-#' should return either a value, one there is an homogeneous divergence, or a matrix indicating the divergence that
+#' @details This function determines the increase in divergence between separated clusters of a species. This function
+#' should return either (i) a single value if there is an homogeneous divergence, or (ii) a matrix indicating the divergence that
 #' should be accumulated between specific pairwise geographic clusters.
 #' 
 #' The function can either return a single value or a full cluster by cluster matrix. If only one value is returned it will be used 
 #' to increment divergence between any given distinct cluster pairs. If a matrix is returned it has to be in the dimension of
-#' cluster x cluster, in which case the divergence values will be increased according to the cluster membership of any cell pairs
+#' cluster x cluster, in which case the divergence values will be increased according to the cluster membership of any cell pairs.
 #'
 #' For every time step, the divergence between geographic clusters can increase by a defined number. The divergence values can be 
 #' scaled optionally using the species or landscape information. For instance, the divergence between clusters could be higher under
 #' warmer temperature, or difference in ecological traits could promote faster divergence between clusters.
 #' 
-#' Oppositely, for every time step, if cluster are merged their divergence is reduced by 1. 
+#' Oppositely, for every time-step, if cluster are merged their divergence is reduced by one (1). 
 #'
 #' @param species the species of the current time step
-#' @param cluster_indices an index vector indicating the cluster every occupied cell is part of
+#' @param cluster_indices an index vector indicating the cluster every occupied site is part of
 #' @param landscape the landscape of the current time step
 #' @param config the config of the simulation
 #'
-#' @return a single value or a matrix of divergences between all clusters occuring in clusters_indices
+#' @return a single value or a matrix of divergences between all clusters occurring in clusters_indices
 #' @export
 get_divergence_factor <- function(species, cluster_indices, landscape, config){
   stop("this function documents the user function interface only, do not use it!")
 }
 
-#' loop_speciation orchestrates the speciation of any species alive in the simualtion
+#' Orchestrates the speciation of any species alive in the simulation
 #'
 #' @param config the current config object
 #' @param data the current data object
@@ -148,7 +148,7 @@ loop_speciation <- function(config, data, vars) {
 #'
 #' @param gen_dist_spi a divergence matrix
 #' @param clu_geo_spi_ti a cluster index
-#' @param ifactor the divergence factor by which the clusters distances are to be incresed
+#' @param ifactor the divergence factor by which the clusters distances are to be increased
 #'
 #' @return an updated divergence matrix
 #' @noRd
@@ -176,7 +176,7 @@ update_divergence <- function(divergence, cluster_indices, ifactor) {
 }
 
 
-#' Updates the total number of existing species, to be replaced
+#' Updates the total number of species
 #'
 #' @param config the current config object
 #' @param data the current data list

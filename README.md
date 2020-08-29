@@ -1,4 +1,4 @@
-![logo](logo.png)
+![gen3sis](./inst/logo/gen3sis_logo.png)
 
 
 # General Engine for Eco-Evolutionary Simulations
@@ -13,13 +13,13 @@ Package authorship according to: http://epub.wu.ac.at/3269/1/Report114.pdf
 
 ### How to install gen3sis
 
-gen3sis will be soon on CRAN. As soon as this is done, you can install the latest CRAN release via
+gen3sis is avabaile on [CRAN](https://CRAN.R-project.org/package=gen3sis). You can install the latest CRAN release via
 
 ```{r}
 install.packages("gen3sis")
 ```
 
-Until then, you can install the latest development release from GitHub via 
+you can also install the latest development release from GitHub via 
 
 ```{r}
 devtools::install_github(repo = "project-gen3sis/R-package/", 
@@ -34,7 +34,13 @@ Below the status of the automatic Travis CI tests on the master branch
 Load and run a simulation with the desired config and landscapes. Exemple data is provided with the package
 ```{r}
 library("gen3sis")
-sim <- run_simulation(config = "config_xD.R", input_directory = "./simulations/World")
+
+datapath <- system.file(file.path("extdata", "WorldCenter"), package = "gen3sis")
+
+sim <- run_simulation(config = file.path(datapath, "config/config_worldcenter.R"), 
+               landscape = file.path(datapath, "landscape"),
+               output_directory = tempdir(),
+               verbose=0)
 ```
 A summary statistics is stored at 'sim' more data can be save using the oberver function
 
@@ -55,4 +61,4 @@ Make sure you have the latest gen3sis version
 paste("gen3sis version:", packageVersion("gen3sis"))
 ```
 
-Package mantined by Oskar Hagen (oskar@hagen.bio)
+Package mantined by Oskar Hagen [(oskar@hagen.bio)](https://www.hagen.bio)

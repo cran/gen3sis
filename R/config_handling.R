@@ -1,9 +1,9 @@
 # Copyright (c) 2020, ETH Zurich
 
-#' checks if the necessary directories exist, and otherwise creates them.
-#' This function will be called by the simulation, but is made available if the directories should be created
+#' Checks if the necessary directories exist, and otherwise creates them
+#' 
+#' @details This function will be called by the simulation, but is made available if the directories should be created
 #' manually beforehand, for example to redirect the stdout to a file in the output directory.
-#'
 #' @param config_file path to the config file, if NA the default config will be used
 #' @param input_directory path to input directory, if NA it will be derived from the config file path
 #' @param output_directory path to output directory, if NA it will be derived from the config file path
@@ -83,10 +83,11 @@ prepare_directories <- function(config_file = NA,
 
 
 
-#' creates either an empty configuration or a pre-filled configuration object from a config file.
+#' Creates either an empty configuration or a pre-filled configuration object from a config file
 #'
-#' @param config_file the path to a valid configuration file. if NA it creates an empty config.
-#' @return list of configuration elements, similar generated from reading a config_file.R. The internal elements of this list are: "general", "initialization", "dispersal", "speciation", "mutation" and "ecology".
+#' @param config_file the path to a valid configuration file. if NA it creates an empty config
+#' @return list of configuration elements, similar generated from reading a config_file.R. The internal elements 
+#' of this list are: "general", "initialization", "dispersal", "speciation", "mutation" and "ecology"
 #' @example inst/examples/create_input_config_help.R
 #' @export
 create_input_config <- function(config_file = NA) {
@@ -114,7 +115,7 @@ internal_categories <- c("general",
                          )
 
 
-#' initializes a config with the values from a provided config file.
+#' Initializes a config with the values from a provided config file
 #'
 #' @param config config object to fill
 #' @param config_file config file to retrieve settings from
@@ -140,8 +141,9 @@ populate_config <- function(config, config_file) {
   return(invisible(config))
 }
 
-#' This function is a helper function to take on a set of user options for the given category.
+#' Helper function taking on a set of user options for the given category
 #'
+#' @details This function is a helper function to take on a set of user options for the given category.
 #' @param config_list a named list of settings to look for
 #' @param user_env an environment containing all the user provided config options
 #'
@@ -159,7 +161,7 @@ populate_settings_list <- function(config_list, user_env) {
 }
 
 
-#' This function verifies that all required config fields are provided.
+#' Verifies if all required config fields are provided
 #'
 #' @param config a config object
 #' @return Returns TRUE for a valid config, FALSE otherwise, in which case a list of
@@ -196,10 +198,10 @@ verify_config <- function(config) {
 }
 
 
-#' This function creates an empty config object
+#' Creates an empty config object
 #'
-#' @details all config fields are created and set to NA if they can be omited by the user
-#' or set to NULL if they must be provided before starting a simulation
+#' @details All config fields are created and set to NA if they can be omitted by the user
+#' or set to NULL if they must be provided before starting a simulation.
 #' @return returns an empty config structure
 #' @noRd
 create_empty_config <- function(){
@@ -235,9 +237,9 @@ create_empty_config <- function(){
 }
 
 
-#' This function completes the settings of a given config
+#' Completes the settings of a given config
 #'
-#' @details some final checks and settings before the simulations runs.
+#' @details This function conducts the final checks and settings before the simulations runs.
 #' currently these include setting the random seed and adding a dispersal trait if not done by the user
 #' @param config the current config for this simulation run
 #' @noRd
@@ -255,9 +257,10 @@ complete_config <- function(config) {
 }
 
 
-#' writes out a config skeleton, that is, an empty config file to be edited by the user.
+#' Writes out a config skeleton
 #'
-#' @param file_path file path to write the file to
+#' @details This function writes out a config skeleton, that is, an empty config file to be edited by the user.
+#' @param file_path file path to write the file into
 #' @param overwrite overwrite existing file defaults to FALSE
 #'
 #' @return returns a boolean indicating success or failure

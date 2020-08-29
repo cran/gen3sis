@@ -2,18 +2,19 @@
 % Please edit documentation in R/config_handling.R
 \name{create_input_config}
 \alias{create_input_config}
-\title{creates either an empty configuration or a pre-filled configuration object from a config file.}
+\title{Creates either an empty configuration or a pre-filled configuration object from a config file}
 \usage{
 create_input_config(config_file = NA)
 }
 \arguments{
-\item{config_file}{the path to a valid configuration file. if NA it creates an empty config.}
+\item{config_file}{the path to a valid configuration file. if NA it creates an empty config}
 }
 \value{
-list of configuration elements, similar generated from reading a config_file.R. The internal elements of this list are: "general", "initialization", "dispersal", "speciation", "mutation" and "ecology".
+list of configuration elements, similar generated from reading a config_file.R. The internal elements 
+of this list are: "general", "initialization", "dispersal", "speciation", "mutation" and "ecology"
 }
 \description{
-creates either an empty configuration or a pre-filled configuration object from a config file.
+Creates either an empty configuration or a pre-filled configuration object from a config file
 }
 \examples{
 # create empty config object

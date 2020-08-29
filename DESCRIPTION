@@ -1,7 +1,7 @@
 Package: gen3sis
 Type: Package
 Title: General Engine for Eco-Evolutionary Simulations
-Version: 1.0
+Version: 1.1
 Authors@R: c(
   person("ETH Zürich", role=c("cph")),
   person("Oskar", "Hagen", email = "oskar@hagen.bio", role = c("aut", "cre"), comment = "Landscape Ecology, WSL and ETH Zürich, Switzerland"),
@@ -21,7 +21,7 @@ LazyData: true
 Depends: R (>= 3.5.0)
 Imports: Rcpp (>= 0.12.16), Matrix, methods, utils, raster, gdistance,
         sp, stringr, tools, grDevices
-Suggests: knitr, testthat (>= 2.1.0), rmarkdown
+Suggests: knitr, testthat (>= 2.1.0), rmarkdown, formatR
 LinkingTo: Rcpp, BH
 URL: https://github.com/project-Gen3sis/R-package
 BugReports: https://github.com/project-Gen3sis/R-package/issues
@@ -29,7 +29,7 @@ RoxygenNote: 7.1.1
 VignetteBuilder: knitr
 SystemRequirements: C++11
 NeedsCompilation: yes
-Packaged: 2020-07-09 12:43:57 UTC; ohagen
+Packaged: 2020-08-29 13:08:39 UTC; ohagen
 Author: ETH Zürich [cph],
   Oskar Hagen [aut, cre] (Landscape Ecology, WSL and ETH Zürich,
     Switzerland),
@@ -52,4 +52,4 @@ Author: ETH Zürich [cph],
     Switzerland)
 Maintainer: Oskar Hagen <oskar@hagen.bio>
 Repository: CRAN
-Date/Publication: 2020-07-10 16:40:02 UTC
+Date/Publication: 2020-08-29 14:00:03 UTC

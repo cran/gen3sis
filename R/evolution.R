@@ -1,14 +1,14 @@
 # Copyright (c) 2020, ETH Zurich
 
 
-#' apply_evolution allows defining the function that changes the values of traits of a given
-#' species at each time step and in each cell. If no operations are provided, traits are not changing.
+#' Allows defining the function that changes the values of traits of a given
+#' species at each time-step and in each site. If no operations are provided, traits are not changing
 #'
 #' @details This function is called for any single species alongside an index for
-#' the geographical clusters within the species.
+#' the geographical clusters within the species
 #'
-#' @param species The target species object whose traits will be changed
-#' @param cluster_indices an index vector indicating the cluster every occupied cell is part of
+#' @param species the target species object whose traits will be changed
+#' @param cluster_indices an index vector indicating the cluster every occupied site is part of
 #' @param landscape the current landscape which can co-determine the rate of trait changes
 #' @param config the current config
 #'
@@ -56,7 +56,7 @@ evolve <- function(species, landscape, distance_matrix, config){
 
 
 
-#' evolution_mode_none
+#' No evolution considered
 #'
 #' @param species the current species
 #' @param cluster_indices indices to assign cells to geographic clusters

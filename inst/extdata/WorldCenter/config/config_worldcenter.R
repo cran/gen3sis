@@ -10,7 +10,6 @@
 # Landscape: WorldCenter
 #
 # Publications: R-package gen3sis
-
 #
 # Description: Example config used at the introduction vignette and similar to case study global configs in Hagen et al. 2020.
 # O. Hagen, B. Flück, F. Fopp, J.S. Cabral, F. Hartig, M. Pontarp, T.F. Rangel, L. Pellissier. gen3sis: The GENeral Engine for Eco-Evolutionary SImulationS on the origins of biodiversity.
@@ -39,7 +38,7 @@ max_number_of_coexisting_species = 10000
 # a list of traits to include with each species
 trait_names = c("temp",  "dispersal")
 
-# ranges to scale the input environemts with:
+# ranges to scale the input environments with:
 environmental_ranges = list("temp" = c(-45, 55), "area"=c(101067, 196949), "prec"=c(1,0.5))
 
 ######################################
@@ -72,7 +71,7 @@ end_of_timestep_observer = function(data, vars, config){
 # the initial abundance of a newly colonized cell, both during setup and later when colonizing a cell during the dispersal
 initial_abundance = 1
 
-# defines the initial speices traits and ranges
+# defines the initial species traits and ranges
 # place species within rectangle, our case entire globe
 create_ancestor_species <- function(landscape, config) {
   range <- c(-180, 180, -90, 90)
@@ -152,11 +151,11 @@ apply_evolution <- function(species, cluster_indices, landscape, config) {
 apply_ecology <- function(abundance, traits, landscape, config) {
   abundance_scale = 10
   abundance_threshold = 1
-  #abundance treashold
+  #abundance threshold
   survive <- abundance>=abundance_threshold
   abundance[!survive] <- 0
   abundance <- (( 1-abs( traits[, "temp"] - landscape[, "temp"]))*abundance_scale)*as.numeric(survive)
-  #abundance thhreashold
+  #abundance threshold
   abundance[abundance<abundance_threshold] <- 0
   k <- ((landscape[,"area"]*(landscape[,"prec"]+0.1)*(landscape[,"temp"]+0.1))*abundance_scale^2)
   total_ab <- sum(abundance)

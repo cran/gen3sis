@@ -1,9 +1,9 @@
 # Copyright (c) 2020, ETH Zurich
 
-#' plot a species' presence on a given landscape
+#' Plot a species' presence on a given landscape
 #'
-#' @param species a single species
-#' @param landscape a landscape
+#' @param species a single species object
+#' @param landscape a landscape object
 #' @example inst/examples/plot_species_presence_help.R
 #' @export
 plot_species_presence <- function(species, landscape) {
@@ -18,7 +18,7 @@ plot_species_presence <- function(species, landscape) {
 }
 
 
-#' plot the environment variable of a given landscape
+#' Plot the environment variable of a given landscape
 #'
 #' @param landscape the landscape to plot the environment from
 #'
@@ -32,9 +32,9 @@ plot_landscape <- function(landscape) {
 }
 
 
-#' plot the outline of a given landscape over time
+#' Plot the outline of a given landscape over time
 #'
-#' @param landscape the input landscape to plot
+#' @param landscape the input landscape to be plotted
 #' @param slices the amount of slices though time between start and end (default value is 2).
 #' @param start_end_times the stating and ending times of the simulation (default is NULL, takes the oldest and most recent available)
 #'
@@ -57,10 +57,10 @@ plot_landscape_overview <- function(landscape, slices=2, start_end_times=NULL) {
 }
 
 
-#' plot simulation default summary object
+#' Plot simulation default summary object
 #'
-#' @param output tsgen3sis output object resulting from a gen3sis simulation 
-#' @param summary_title summary plot title as character. If NULL, title computed from input name.
+#' @param output a sgen3sis output object resulting from a gen3sis simulation (i.e. run_simulation)
+#' @param summary_title summary plot title as character. If NULL, title is computed from input name.
 #' @param summary_legend either a staring with _\_n for new lines or NULL. If NULL, provides default summary and simulation information.
 #' @seealso \code{\link{run_simulation}}   
 #' @example inst/examples/plot_summary_help.R
@@ -111,7 +111,7 @@ plot_summary <- function(output, summary_title=NULL, summary_legend=NULL) {
   par(xpd=TRUE)
   legend("topleft", inset=c(-0.3,-0.3), title=summary_title, legend=summary_legend, bty="n")
 
-  #plot  time behaviour
+  #plot time behavior
   d <- output$summary$phylo_summary[-1,-1]
   plot( d[,"alive"],  xlab="", ylab="", type='l', col="black", lwd=4, frame.plot = FALSE, xaxt='n', yaxt='n')
   axis(4,line=-1, cex=1, cex.axis=1, col="black")
@@ -134,7 +134,7 @@ plot_summary <- function(output, summary_title=NULL, summary_legend=NULL) {
   
   # richness map
   ras <- rasterFromXYZ(output$summary$`richness-final`)
-  rc <- color_richness(max(ras@data@values, na.rm=TRUE))
+  rc <- color_richness(max(ras@data@values, na.rm=TRUE) + 1)
   image(ras, col=rc, bty = "o", xlab = "", ylab = "", las=1)
   mtext(4, text="Final \u03B1 richness", line=1, cex=1.2)
   raster::plot(rasterFromXYZ(output$summary$`richness-final`), legend.only=TRUE, add=TRUE,col=rc)
@@ -144,15 +144,28 @@ plot_summary <- function(output, summary_title=NULL, summary_legend=NULL) {
 
 
 
-#' plot the richness of the given list of species on a landscape
+#' Plot the richness of the given list of species on a landscape
 #'
 #' @param species_list a list of species to use in the richness calculation
-#' @param landscape a landscape to plot the richness onto
+#' @param landscape a corresponding landscape object
 #' @example inst/examples/plot_richness_help.R
 #' @export
 plot_richness <- function(species_list, landscape) {
   richness <- get_geo_richness(species_list, landscape)
-  rc <- color_richness(max(richness, na.rm=TRUE))
+  max_richness <- max(richness, na.rm=TRUE)
+  min_richnes <- min(richness, na.rm=TRUE)
+  
+  # attribute proper color scale
+  zerorichness_col <- "navajowhite3"
+  if (max_richness==0){ #if all extinct
+    rc <-  zerorichness_col
+  } else {
+    rc <- color_richness(max_richness)
+    if (min_richnes==0){ #if there is zero-richness (i.e. inhabited sites)
+      rc <- c(zerorichness_col, rc)
+    }
+  }
+  
   conditional_plot("richness",
                    landscape,
                    plot_raster_single,
@@ -163,11 +176,11 @@ plot_richness <- function(species_list, landscape) {
 }
 
 
-#' save plots if called from within a simulation run, display as well if run interactively
+#' Save plots if called from within a simulation run, display as well if run interactively
 #'
 #' @param title folder and file name
 #' @param landscape current landscape
-#' @param plot_fun ploting function to use (single or multiple rasters for now)
+#' @param plot_fun plotting function to use (single or multiple rasters)
 #' @param ... arguments for plot_fun
 #'
 #' @importFrom grDevices png
@@ -189,11 +202,11 @@ conditional_plot <- function(title, landscape, plot_fun, ...){
 }
 
 
-#' plot a single set of values onto a given landscape
+#' Plot a single set of values onto a given landscape
 #'
 #' @param values a named list of values, the names must correspond to cells in the landscape
 #' @param landscape a landscape to plot the values onto
-#' @param title a title string for resulting plot, the time will be taken and appended from the landscape id
+#' @param title a title string for resulting plot, the time information will be taken and appended from the landscape id
 #' @param no_data what value should be used for missing values in values
 #' @param col corresponds to the \link{raster} col plot parameter. This can be omitted and colors handled by raster::plot  
 #' @example inst/examples/plot_raster_single_help.R
@@ -207,12 +220,12 @@ plot_raster_single <- function(values, landscape, title, no_data = 0, col) {
 }
 
 
-#' plot a set of values onto a given landscape
+#' Plot a set of values onto a given landscape
 #'
-#' @param values a matrix of values with columns coresponding to sets of values, and rows corresponding to grid cells,
+#' @param values a matrix of values with columns corresponding to sets of values, and rows corresponding to grid cells,
 #' this will result in ncol(values) raster plots.
 #' @param landscape a landscape to plot the values onto
-#' @param no_data what value should be used for missing values in values
+#' @param no_data what value should be used for missing data present in the values parameter
 #'
 #' @export
 plot_raster_multiple <- function(values, landscape, no_data = 0) {
@@ -230,9 +243,9 @@ plot_raster_multiple <- function(values, landscape, no_data = 0) {
 }
 
 
-#' define gen3sis richness color scale
+#' Define gen3sis richness color scale
 #' @param n corresponds to the \link{colorRampPalette} parameter 
-#' @return returns a \link{colorRampPalette} function with the gen3sis richness colours
+#' @return returns a \link{colorRampPalette} function with the gen3sis richness colors
 #' @export
 color_richness <- colorRampPalette(
   c("#440154FF", "#482878FF", "#3E4A89FF", "#31688EFF", "#26828EFF", "#1F9E89FF", "#35B779FF",

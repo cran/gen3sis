@@ -99,7 +99,7 @@ config_file_path <- file.path(tempdir(), "config_empty.R")
 #  # O. Hagen, B. Flück, F. Fopp, J.S. Cabral, F. Hartig, M. Pontarp, T.F. Rangel, L. Pellissier. gen3sis: The GENeral Engine for Eco-Evolutionary SImulationS on the origins of biodiversity.
 
 ## ----eval=FALSE---------------------------------------------------------------
-#  random_seed = 666
+#  random_seed = 001
 #  start_time = NA
 #  end_time = NA
 #  max_number_of_species = 50000

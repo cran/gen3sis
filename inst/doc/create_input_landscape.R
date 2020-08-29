@@ -39,7 +39,7 @@ for(i in 1:nlayers(temperature_brick)){
 
 ## ----eval=TRUE----------------------------------------------------------------
 cost_function_null <- function(source, habitable_src, dest, habitable_dest) {
-    return(1)
+    return(1) #represents cost 4 in a 4degree landscape
 }
 
 ## ---- echo=FALSE, eval=F------------------------------------------------------
