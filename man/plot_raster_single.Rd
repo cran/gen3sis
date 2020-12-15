@@ -4,7 +4,7 @@
 \alias{plot_raster_single}
 \title{Plot a single set of values onto a given landscape}
 \usage{
-plot_raster_single(values, landscape, title, no_data = 0, col)
+plot_raster_single(values, landscape, title, no_data = 0, col, legend = TRUE)
 }
 \arguments{
 \item{values}{a named list of values, the names must correspond to cells in the landscape}
@@ -15,7 +15,9 @@ plot_raster_single(values, landscape, title, no_data = 0, col)
 
 \item{no_data}{what value should be used for missing values in values}
 
-\item{col}{corresponds to the \link{raster} col plot parameter. This can be omitted and colors handled by raster::plot}
+\item{col}{corresponds to the \link{raster} col plot parameter. This can be omitted and colors are handled by raster::plot}
+
+\item{legend}{corresponds to the \link{raster} legend plot parameter. This can be omitted and legend is handled by raster::plot}
 }
 \description{
 Plot a single set of values onto a given landscape
@@ -25,13 +27,13 @@ Plot a single set of values onto a given landscape
 datapath <- system.file(file.path("extdata", "WorldCenter"), package = "gen3sis")
 
 # plot environmental variables at a given step
-landscape_t_150 <- readRDS(
-  file.path(datapath, "output", "config_worldcenter", "landscapes", "landscape_t_150.rds"))
+landscape_t_25 <- readRDS(
+  file.path(datapath, "output", "config_worldcenter", "landscapes", "landscape_t_25.rds"))
 oldpar <- par(no.readonly = TRUE)
 par(mfrow=c(1,2))
-plot_raster_single(landscape_t_150$environment[,"temp"], landscape_t_150, "Temperature", NA)
+plot_raster_single(landscape_t_25$environment[,"temp"], landscape_t_25, "Temperature", NA)
 # use col to change the color
-plot_raster_single(landscape_t_150$environment[,"prec"], landscape_t_150, "Aridity", NA, 
+plot_raster_single(landscape_t_25$environment[,"arid"], landscape_t_25, "Aridity", NA, 
                    col=topo.colors(5))
 par(oldpar)
 # note that these values were scaled by the configuration object

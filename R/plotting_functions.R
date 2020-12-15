@@ -90,26 +90,46 @@ plot_summary <- function(output, summary_title=NULL, summary_legend=NULL) {
   #summary title
   if (is.null(summary_title)){
     summary_title <- str_split(output$parameters$directories$input, "/")[[1]]
-    summary_title <- paste(summary_title, collapse = ">")
-    summary_title <- str_remove(summary_title, "..>")
-    summary_title <- str_remove(summary_title, ".>")
-    summary_title <- str_remove(summary_title, ".")
-    summary_title <- paste0("[",summary_title,"]")
+    summary_title <- paste(tail(summary_title,2)[1], collapse = ">")
+    #summary_title <- str_remove(summary_title, "..>")
+    #summary_title <- str_remove(summary_title, ".>")
+    #summary_title <- str_remove(summary_title, ".")
   }
   #summary text
   if (is.null(summary_legend)){
+    sum_names <- names(output$parameters$gen3sis$general)
+    sumss <- output$parameters$gen3sis$general
+    sumar <- output$summary
+    phylo <- sumar$phylo_summary[c(1,nrow(sumar$phylo_summary)),]
+    col_sum <- colSums(sumar$phylo_summary)
     summary_legend=paste(
-      paste(names(output$parameters$gen3sis$general[2]), output$parameters$gen3sis$general[2], sep=": "),
-      paste(names(output$parameters$gen3sis$general[3]), output$parameters$gen3sis$general[3], sep=": "),
-      paste(names(output$system)[1], round(output$system$`runtime-hours`,3), sep=": "),
-      paste("world_habited_present", paste0(round(output$summary$occupancy[length(output$summary$occupancy)],1)*100,"%"), sep=": "),
-      paste("cumulative_richness", output$summary$phylo_summary[nrow(output$summary$phylo_summary),"total"], sep=": "),
-      paste("extinction", paste0(round(((output$summary$phylo_summary[nrow(output$summary$phylo_summary),"total"]-output$summary$phylo_summary[nrow(output$summary$phylo_summary),"alive"])/output$summary$phylo_summary[nrow(output$summary$phylo_summary),"total"])*100,0),"%"), sep=": "),
+      paste(sum_names[2], 
+            sumss[2], sep=": "),
+      #paste(sum_names[3],
+      #      sumss[3], sep=": "),
+      paste('end_time;', tail(names(sumar$occupancy), 1)),
+      paste("traits", 
+            paste0(sumss[7][[1]], collapse = ","), sep=": "),
+      paste("world_habited_present", 
+            paste0(round(sumar$occupancy[length(sumar$occupancy)],1)*100,"%"), sep=": "),
+      paste("initial_richness", 
+            phylo[1,"total"], sep=": "),
+      paste("cumulative_richness", 
+            phylo[2,"total"], sep=": "),
+      paste("richness_present", 
+            phylo[2,"alive"], sep=": "),
+      paste("speciation", 
+            paste0(round((col_sum["speciations"]-phylo["initial", "total"])/phylo[1, "total"]*100, 0),"%"), sep=": "),
+      paste("extinction", 
+            paste0(round((col_sum["extinctions"])/phylo[1, "total"]*100, 0),"%"), sep=": "),
+      paste(names(output$system)[1], 
+            round(output$system$`runtime-hours`,2), sep=": "),
       sep="\n")
   }
   #plot summary legend
   par(xpd=TRUE)
-  legend("topleft", inset=c(-0.3,-0.3), title=summary_title, legend=summary_legend, bty="n")
+  
+  legend("topleft", inset=c(0,-0.4), title=paste0("Summary [",summary_title,"]"), legend=summary_legend, bty="n", title.adj=0)
 
   #plot time behavior
   d <- output$summary$phylo_summary[-1,-1]
@@ -129,13 +149,29 @@ plot_summary <- function(output, summary_title=NULL, summary_legend=NULL) {
          lwd=c(4,NA,NA),
          bty = "n")
   axis_lab <- seq(from=1, to=nrow(d), length.out = max((nrow(d)/20),2))
-  axis(1, at=rev(as.numeric(rownames(d)))[axis_lab], labels = rownames(d)[axis_lab])
+  axis(1, at=axis_lab, labels = rownames(d)[axis_lab])
   mtext(side=1, text="Time steps", line=2.5, cex=1.1)
   
   # richness map
+  #attribute collor
   ras <- rasterFromXYZ(output$summary$`richness-final`)
-  rc <- color_richness(max(ras@data@values, na.rm=TRUE) + 1)
-  image(ras, col=rc, bty = "o", xlab = "", ylab = "", las=1)
+  max_ras <- max(ras@data@values, na.rm=TRUE)
+  min_ras <- min(ras@data@values, na.rm=TRUE)
+  # rc <- color_richness(max(ras@data@values, na.rm=TRUE) + 1)
+  #terrain color
+  zerorichness_col <- "navajowhite3"
+  if (max_ras==0){ #if all extinct
+    rc <-  zerorichness_col
+  } else {
+    rc <- color_richness(max_ras)
+    if (min_ras==0){ #if there is zero-richness (i.e. inhabited sites)
+      rc <- c(zerorichness_col, rc)
+    }
+  }
+  
+  
+  
+  image(ras, col=rc, bty = "o", xlab = "", ylab = "", las=1, asp = 1)
   mtext(4, text="Final \u03B1 richness", line=1, cex=1.2)
   raster::plot(rasterFromXYZ(output$summary$`richness-final`), legend.only=TRUE, add=TRUE,col=rc)
   }
@@ -176,6 +212,66 @@ plot_richness <- function(species_list, landscape) {
 }
 
 
+
+#' Plot species ranges of the given list of species on a landscape
+#'
+#' @param species_list a list of species to use in the richness calculation
+#' @param landscape a corresponding landscape object
+#' @param disturb value randomly added to shift each species symbol. Useful to enhance visualization in case of multiple species overlaps  
+#' @param max_sps maximum number of plotted species, not recommended above 20
+#' @example inst/examples/plot_ranges_help.R
+#' @export
+plot_ranges <- function(species_list, landscape, disturb=0, max_sps=10) {
+  disturb=abs(disturb)
+  max_sps <- abs(max_sps)
+  #plot landscape
+  oldpar <- par(no.readonly = TRUE)
+  on.exit(par(oldpar))
+  layout( matrix(c(1,1,2),nrow=1, byrow =TRUE)  )
+  #layout.show(2)
+  #par(mar=c(4,3,3,7), oma=c(0.1,0.8,0.3,0.8))
+  par(xpd = FALSE)
+  raster::image(raster::rasterFromXYZ(cbind(landscape$coordinates,1)), main="species ranges", col="navajowhite3", asp = 1)
+  n_species <- length(species_list)
+  alive <- unlist(lapply(species_list, function(x){length(x$abundance)}))
+  alive <- alive>0
+  #visual combinations
+  sp_cols <- c("#FF0000", "#FF4D00", "#FFE500", 
+               "#CCFF00", "#80FF00", "#33FF00", 
+               "#00FF19", "#00FF66", "#00FFB2", 
+               "#00FFFF", "#00B3FF", "#0066FF", 
+               "#001AFF", "#3300FF", "#7F00FF", 
+               "#CC00FF", "#FF00E6", "#FF0099", 
+               "#FF004D") #FIX
+  sp_pchs <- 1:6 #FIX
+  
+  #limit plot
+  omitted <- 0
+  n_sps_max <- sum(alive)
+  if (n_sps_max>max_sps){
+    omitted <- n_sps_max-max_sps
+    n_sps_max <- max_sps
+  }
+  # set to case
+  cols <- rep(sp_cols, length.out=n_species)
+  pchs <- rep(sp_pchs, length.out=n_species)
+  par(xpd = TRUE)
+  for (i in 1:n_sps_max){
+    sp_i <- (1:n_species)[alive][i]
+    img <- cbind(landscape[["coordinates"]][names(species_list[[sp_i]]$abundance),,drop=FALSE], species_list[[sp_i]]$id)
+    df <- as.data.frame(img)
+    plot_diturbance <- sample(seq(-disturb, disturb, by=0.01), 1)
+    points(x=as.numeric(df$x)+plot_diturbance, y=as.numeric(df$y)+plot_diturbance, pch=pchs[sp_i], col=cols[sp_i])
+  }
+  # legend plotted species
+  # empty plot
+  plot(1, type="n", xlab="", ylab="", xlim=c(0, 10), ylim=c(0, 10), axes=FALSE, ann=FALSE)
+  # legend
+  par(xpd=TRUE)
+  legend("top", inset=c(-0.15,0), title=paste(n_sps_max, "species", paste0("\n[", omitted, ' omitted]')), legend=(1:n_species)[alive][1:n_sps_max], pch=pchs[alive][1:n_sps_max], col=cols[alive][1:n_sps_max], bty="n")
+}
+
+
 #' Save plots if called from within a simulation run, display as well if run interactively
 #'
 #' @param title folder and file name
@@ -208,15 +304,16 @@ conditional_plot <- function(title, landscape, plot_fun, ...){
 #' @param landscape a landscape to plot the values onto
 #' @param title a title string for resulting plot, the time information will be taken and appended from the landscape id
 #' @param no_data what value should be used for missing values in values
-#' @param col corresponds to the \link{raster} col plot parameter. This can be omitted and colors handled by raster::plot  
+#' @param col corresponds to the \link{raster} col plot parameter. This can be omitted and colors are handled by raster::plot  
+#' @param legend corresponds to the \link{raster} legend plot parameter. This can be omitted and legend is handled by raster::plot
 #' @example inst/examples/plot_raster_single_help.R
 #' @export
-plot_raster_single <- function(values, landscape, title, no_data = 0, col) {
+plot_raster_single <- function(values, landscape, title, no_data = 0, col, legend=TRUE) {
   img <- cbind(landscape[["coordinates"]], no_data)
   img[names(values), 3] <- values
   ras <- rasterFromXYZ(img)
   ras <- extend(ras, landscape[["extent"]])
-  raster::plot(ras, main=paste0(title, ", t: ", landscape[["id"]]), col=col)
+  raster::plot(ras, main=paste0(title, ", t: ", landscape[["id"]]), col=col, legend=legend)
 }
 
 

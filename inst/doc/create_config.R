@@ -7,11 +7,11 @@ knitr::opts_chunk$set(
 ## ----setup--------------------------------------------------------------------
 library(gen3sis)
 
-## ----eval=TRUE----------------------------------------------------------------
-# get data path
-datapath <- system.file(file.path("extdata", "EmptyConfig"), package="gen3sis")
-# set config_empty.R file path
-config_file_path <- file.path(tempdir(), "config_empty.R")
+## ----eval=FALSE---------------------------------------------------------------
+#  # get data path
+#  datapath <- system.file(file.path("extdata", "EmptyConfig"), package="gen3sis")
+#  # set config_empty.R file path
+#  config_file_path <- file.path(tempdir(), "config_empty.R")
 
 ## ----eval=FALSE, message=FALSE------------------------------------------------
 #  #writes out a config skeleton
@@ -92,20 +92,21 @@ config_file_path <- file.path(tempdir(), "config_empty.R")
 ## ----eval=FALSE---------------------------------------------------------------
 #  # Version: 1.0
 #  # Author: Oskar Hagen
-#  # Date: 1.7.2020
-#  # Landscape: WorldCenter
+#  # Date: 26.10.2020
+#  # Landscape: SouthAmerica
 #  # Publications: R-package gen3sis
 #  # Description: Example config used at the introduction vignette and similar to case study global configs in Hagen et al. 2020.
-#  # O. Hagen, B. Flück, F. Fopp, J.S. Cabral, F. Hartig, M. Pontarp, T.F. Rangel, L. Pellissier. gen3sis: The GENeral Engine for Eco-Evolutionary SImulationS on the origins of biodiversity.
+#  # O. Hagen, B. Flück, F. Fopp, J.S. Cabral, F. Hartig, M. Pontarp, T.F. Rangel, L. Pellissier. gen3sis: the general engine for eco-evolutionary simulations on the origins of biodiversity.
 
 ## ----eval=FALSE---------------------------------------------------------------
-#  random_seed = 001
-#  start_time = NA
+#  random_seed = 6
+#  start_time = 40
 #  end_time = NA
 #  max_number_of_species = 50000
 #  max_number_of_coexisting_species = 10000
 #  trait_names = c("temp",  "dispersal")
-#  environmental_ranges = list("temp" = c(-45, 55), "area"=c(101067, 196949), "prec"=c(1,0.5))
+#  environmental_ranges = list("temp" = c(-45, 55), "area"=c(2361.5, 12923.4),
+#      "arid"=c(1,0.5))
 
 ## ----eval=FALSE---------------------------------------------------------------
 #  end_of_timestep_observer = function(data, vars, config){
@@ -117,7 +118,7 @@ config_file_path <- file.path(tempdir(), "config_empty.R")
 #  end_of_timestep_observer = function(data, vars, config){
 #      par(mfrow=c(2,3))
 #      plot_raster_single(data$landscape$environment[,"temp"], data$landscape, "temp", NA)
-#      plot_raster_single(data$landscape$environment[,"prec"], data$landscape, "prec", NA)
+#      plot_raster_single(data$landscape$environment[,"arid"], data$landscape, "arid", NA)
 #      plot_raster_single(data$landscape$environment[,"area"], data$landscape, "area", NA)
 #      plot_richness(data$all_species, data$landscape)
 #      plot_species_presence(data$all_species[[1]], data$landscape)
@@ -128,33 +129,40 @@ config_file_path <- file.path(tempdir(), "config_empty.R")
 ## ----eval=FALSE---------------------------------------------------------------
 #  initial_abundance = 1
 #  create_ancestor_species <- function(landscape, config) {
-#    range <- c(-180, 180, -90, 90)
+#    range <- c(-95, -24, -68, 13)
 #    co <- landscape$coordinates
 #    selection <- co[, "x"] >= range[1] &
 #      co[, "x"] <= range[2] &
 #      co[, "y"] >= range[3] &
 #      co[, "y"] <= range[4]
-#    initial_cells <- rownames(co)[selection]
-#    new_species <- create_species(initial_cells, config)
-#    #set local adaptation to max optimal temp equals local temp
-#    new_species$traits[ , "temp"] <- landscape$environment[,"temp"]
-#    new_species$traits[ , "dispersal"] <- 1
-#    return(list(new_species))
+#    new_species <- list()
+#    for(i in 1:10){
+#      initial_cells <- rownames(co)[selection]
+#      initial_cells <- sample(initial_cells, 1)
+#      new_species[[i]] <- create_species(initial_cells, config)
+#      #set local adaptation to max optimal temp equals local temp
+#      new_species[[i]]$traits[ , "temp"] <- landscape$environment[initial_cells,"temp"]
+#      new_species[[i]]$traits[ , "dispersal"] <- 1
+#      plot_species_presence(landscape, species=new_species[[i]])
+#    }
+#    return(new_species)
 #  }
 
 ## ----eval=FALSE---------------------------------------------------------------
 #  get_dispersal_values <- function(n, species, landscape, config) {
-#    values <- rweibull(n, shape = 6, scale = 999)
-#    return(values) }
+#    values <- rweibull(n, shape = 1.5, scale = 133)
+#    return(values)
+#  }
 
-## ----eval=TRUE, fig.width=6, fig.height=3.2-----------------------------------
+## ----eval=T, fig.width=6, fig.height=3.2--------------------------------------
 n <- 100
-hist(rweibull(n, shape = 6, scale = 999), col="black")
+hist(rweibull(n, shape = 1.5, scale = 133), col="black")
 
 ## ----eval=FALSE---------------------------------------------------------------
-#  divergence_threshold = 12 #this is 2Myrs
+#  divergence_threshold = 2
 #  get_divergence_factor <- function(species, cluster_indices, landscape, config) {
-#    return(1) }
+#    return(1)
+#    }
 
 ## ----eval=FALSE---------------------------------------------------------------
 #  # mutate the traits of a species and return the new traits matrix
@@ -185,7 +193,7 @@ hist(rweibull(n, shape = 6, scale = 999), col="black")
 #    abundance <- (( 1-abs( traits[, "temp"] - landscape[, "temp"]))*abundance_scale)*as.numeric(survive)
 #    #abundance thhreashold
 #    abundance[abundance<abundance_threshold] <- 0
-#    k <- ((landscape[,"area"]*(landscape[,"prec"]+0.1)*(landscape[,"temp"]+0.1))*abundance_scale^2)
+#    k <- ((landscape[,"area"]*(landscape[,"arid"]+0.1)*(landscape[,"temp"]+0.1))*abundance_scale^2)
 #    total_ab <- sum(abundance)
 #    subtract <- total_ab-k
 #    if (subtract > 0) {
@@ -202,26 +210,70 @@ hist(rweibull(n, shape = 6, scale = 999), col="black")
 #    return(abundance)
 #  }
 
-## ----eval=TRUE----------------------------------------------------------------
+## ----eval=T-------------------------------------------------------------------
 # get data path
-datapath <- system.file(file.path("extdata", "WorldCenter"), package="gen3sis")
+datapath <- system.file(file.path("extdata", "SouthAmerica"), package="gen3sis")
 # creates config object from config file
-config_object <- create_input_config(file.path(datapath, "config/config_worldcenter.R"))
-# modify random seed
-config_object$gen3sis$general$random_seed <- 2020
+config_object <- create_input_config(file.path(datapath, "config/config_southamerica.R"))
+
+# modify the initialization function
+config_object$gen3sis$initialization$create_ancestor_species <- function(landscape, config) {
+  range <- c(-95, -24, -68, 13)
+  co <- landscape$coordinates
+  selection <- co[, "x"] >= range[1] &
+    co[, "x"] <= range[2] &
+    co[, "y"] >= range[3] &
+    co[, "y"] <= range[4]
+
+  initial_cells <- rownames(co)[selection]
+  new_species <- create_species(initial_cells, config)
+  #set local adaptation to max optimal temp equals local temp
+  new_species$traits[ , "temp"] <- landscape$environment[initial_cells,"temp"]
+  new_species$traits[ , "dispersal"] <- 1
+  new_species$abundance <- new_species$abundance*10
+  return(list(new_species))
+}
+
+## ----eval=T-------------------------------------------------------------------
+# modify the ecology function
+config_object$gen3sis$ecology$apply_ecology <- function(abundance, traits, landscape, config, abundance_scale = 10, abundance_threshold = 8) {
+  #abundance threshold
+  abundance <- as.numeric(!abundance<abundance_threshold)
+  abundance <- (( 1-abs( traits[, "temp"] - landscape[, "temp"]))*abundance_scale)*abundance
+  #abundance threshold
+  abundance[abundance<abundance_threshold] <- 0
+  return(abundance)
+}
+
+## ----eval=T, fig.width=7, fig.height=3----------------------------------------
+config_object_old <- create_input_config(file.path(datapath, "config/config_southamerica.R"))
+
+# define observer
+config_object_old$gen3sis$general$end_of_timestep_observer <- function(data, vars, config){
+  plot_ranges(data$all_species, data$landscape, disturb=0, max_sps=10)
+}
+
+config_object$gen3sis$general$end_of_timestep_observer <- config_object_old$gen3sis$general$end_of_timestep_observer 
+
+# define only 3 time-steps
+config_object_old$gen3sis$general$end_time <- 38
+config_object$gen3sis$general$end_time <- 38
+
 
 ## -----------------------------------------------------------------------------
+verify_config(config_object_old)
 verify_config(config_object)
 
-## ----eval=F-------------------------------------------------------------------
-#  # run simulation by indicating config file path
-#  sim_old <- run_simulation(config = file.path(datapath, "config/config_worldcenter.R"),
+## ----eval=FALSE, fig.width=7, fig.height=3------------------------------------
+#  sim_old <- run_simulation(config = config_object_old,
 #                 landscape = file.path(datapath, "landscape"),
-#                 output_directory=tempdir())
-#  
-#  # run simulation by indicating config object
+#                 output_directory=tempdir(),
+#                 call_observer = 4,
+#                 verbose=0) # no progress printed
+
+## ----eval=FALSE, fig.width=7, fig.height=3------------------------------------
 #  sim_new <- run_simulation(config = config_object,
-#                 landscape = file.path(datapath, "landscape"),
-#                 output_directory=tempdir())
-#  
+#                            landscape = file.path(datapath, "landscape"),
+#                            verbose=0, # no progress printed
+#                            output_directory=tempdir())
 
