@@ -24,6 +24,7 @@ library(gen3sis)
 library(raster)
 
 ## ----eval=FALSE, message=F----------------------------------------------------
+#  setwd(datapath)
 #  temperature_brick <- brick('InputRasters/SouthAmerica/temperature_rasters.grd')
 #  aridity_brick <- brick('InputRasters/SouthAmerica/aridity_rasters.grd')
 #  area_brick <- brick('InputRasters/SouthAmerica/area_rasters.grd')

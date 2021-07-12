@@ -118,8 +118,21 @@ sim <- readRDS(file.path(datapath, "output/config_southamerica/sgen3sis.rds"))
 #    plot_richness(species_i, landscape_i)
 #  }
 
-## ----eval=T, echo=F, fig.width=7, fig.height=2--------------------------------
-knitr::include_graphics("../inst/extdata/SouthAmerica/images/introduction_richness.png")
+## ----eval=F, echo=F, fig.width=7, fig.height=2--------------------------------
+#  #GENERATE OFFLINE PLOT
+#  timesteps <- c(40, 20, 0)
+#  png("../inst/logo/richness_plot.png", height=500, width=1750, pointsize=28)
+#  par(mfrow=c(1,3))
+#  for(i in timesteps){
+#    landscape_i <- readRDS(file.path(datapath, paste0('output/config_southamerica/landscapes/landscape_t_', i ,'.rds')))
+#    species_i <- readRDS(file.path(datapath, paste0('output/config_southamerica/species/species_t_', i ,'.rds')))
+#    plot_richness(species_i, landscape_i)
+#  }
+#  dev.off()
+
+## ----eval=T, echo=F, out.width='700px', height='200px'------------------------
+#PLOT OFFLINE PLOT
+knitr::include_graphics("../inst/logo/richness_plot.png")
 
 ## ----eval=TRUE, fig.width=7, fig.height=7-------------------------------------
 plot_summary(sim)
@@ -134,7 +147,7 @@ landscape_t0 <- na.omit(landscape_t0)
 glm.uni <- glm(rich ~ poly(temp, 2), data=landscape_t0, family=poisson)
 cor(landscape_t0$temp, landscape_t0$rich)
 
-## ----eval=TRUE, fig.width=7, fig.height=6, fig.retina=2, message=F, results='hide'----
+## ----eval=T, fig.width=7, fig.height=6, fig.retina=2, message=F, results='hide'----
 # prepare data with temperature and predicted richness from our model
 data_plot <- data.frame(cbind(landscape_t0$temp, predict(glm.uni,type = "response")))
 # sort data for plotting and ommit NA's

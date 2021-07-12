@@ -7,9 +7,11 @@ This is the repository for the R-package of the gen3sis engine.
 
 gen3sis is a spatially-explicit eco-evolutionary mechanistic model with a modular implementation. It allows exploring the consequences of ecological and macroevolutionary processes across realistic or theoretical spatio-temporal landscapes.
 
-gen3sis is licensed under a [GPLv3 License](https://www.gnu.org/licenses/gpl-3.0.html) ETHZ 2020 <doi.org/10.5905/ethz-1007-251>
+gen3sis is licensed under a [GPLv3 License](https://www.gnu.org/licenses/gpl-3.0.html) deriving from ETHZ 2020 <doi.org/10.5905/ethz-1007-251> and has package authorship according to: http://epub.wu.ac.at/3269/1/Report114.pdf
 
-Package authorship according to: http://epub.wu.ac.at/3269/1/Report114.pdf
+### The main methods are described here:
+* O Hagen, B Flueck, F Fopp, JS Cabral, F Hartig, M Pontarp, TF Rangel, L Pellissier (2021) gen3sis: the general engine for eco-evolutionary simulations on the origins of biodiversity. bioRxiv. [doi:10.1101/2021.03.24.436109](https://doi.org/10.1101/2021.03.24.436109)
+
 
 ### How to install gen3sis
 
@@ -25,10 +27,11 @@ you can also install the latest development release from GitHub via
 devtools::install_github(repo = "project-gen3sis/R-package/", 
   dependencies = TRUE, build_vignettes = TRUE)
 ```
-Below the status of the automatic Travis CI tests on the master branch
+Below the status of the automatic CI R-CMD-check tests
 
-[![Build Status](https://travis-ci.com/project-gen3sis/R-package.svg?branch=master)](https://travis-ci.com/project-gen3sis/R-package)
+DEVELOPMENT [![R-CMD-check](https://github.com/project-gen3sis/R-package/actions/workflows/R-CMD-check.yaml/badge.svg?branch=development)](https://github.com/project-gen3sis/R-package/actions/workflows/R-CMD-check.yaml)
 
+MASTER [![R-CMD-check](https://github.com/project-gen3sis/R-package/actions/workflows/R-CMD-check.yaml/badge.svg?branch=master)](https://github.com/project-gen3sis/R-package/actions/workflows/R-CMD-check.yaml)
 ### How to run one simple simulation
 
 Load and run a simulation with the desired config and landscapes. Exemple data is provided with the package
@@ -60,5 +63,3 @@ Make sure you have the latest gen3sis version
 #print package version
 paste("gen3sis version:", packageVersion("gen3sis"))
 ```
-
-Package mantined by Oskar Hagen [(oskar@hagen.bio)](https://www.hagen.bio)
