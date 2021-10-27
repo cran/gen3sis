@@ -5,6 +5,8 @@
 #' @param species a single species object
 #' @param landscape a landscape object
 #' @example inst/examples/plot_species_presence_help.R
+#' @return no return value, called for plot
+#' 
 #' @export
 plot_species_presence <- function(species, landscape) {
   presence <- species[["abundance"]]
@@ -18,9 +20,31 @@ plot_species_presence <- function(species, landscape) {
 }
 
 
+#' Plot a species' abundance on a given landscape
+#'
+#' @param species a single species object
+#' @param landscape a landscape object
+#' @example inst/examples/plot_species_abundance_help.R
+#' @return no return value, called for plot
+#' 
+#' @export
+plot_species_abundance <- function(species, landscape) {
+  presence <- species[["abundance"]]
+  conditional_plot(paste0("species_abundance_", species$id),
+                   landscape,
+                   plot_raster_single,
+                   presence,
+                   landscape,
+                   paste("Abundance Species", species[["id"]]))
+}
+
+
+
+
 #' Plot the environment variable of a given landscape
 #'
 #' @param landscape the landscape to plot the environment from
+#' @return no return value, called for plot
 #'
 #' @export
 plot_landscape <- function(landscape) {
@@ -37,6 +61,7 @@ plot_landscape <- function(landscape) {
 #' @param landscape the input landscape to be plotted
 #' @param slices the amount of slices though time between start and end (default value is 2).
 #' @param start_end_times the stating and ending times of the simulation (default is NULL, takes the oldest and most recent available)
+#' @return no return value, called for plot
 #'
 #' @export
 plot_landscape_overview <- function(landscape, slices=2, start_end_times=NULL) {
@@ -67,6 +92,8 @@ plot_landscape_overview <- function(landscape, slices=2, start_end_times=NULL) {
 #' @importFrom graphics layout legend axis mtext points
 #' @importFrom grDevices rgb colorRampPalette
 #' @importFrom stringr str_split str_remove
+#' @return no return value, called for plot
+#' 
 #' @export
 plot_summary <- function(output, summary_title=NULL, summary_legend=NULL) {
   oldpar <- par(no.readonly = TRUE)
@@ -185,6 +212,8 @@ plot_summary <- function(output, summary_title=NULL, summary_legend=NULL) {
 #' @param species_list a list of species to use in the richness calculation
 #' @param landscape a corresponding landscape object
 #' @example inst/examples/plot_richness_help.R
+#' @return no return value, called for plot
+#' 
 #' @export
 plot_richness <- function(species_list, landscape) {
   richness <- get_geo_richness(species_list, landscape)
@@ -220,6 +249,8 @@ plot_richness <- function(species_list, landscape) {
 #' @param disturb value randomly added to shift each species symbol. Useful to enhance visualization in case of multiple species overlaps  
 #' @param max_sps maximum number of plotted species, not recommended above 20
 #' @example inst/examples/plot_ranges_help.R
+#' @return no return value, called for plot
+#' 
 #' @export
 plot_ranges <- function(species_list, landscape, disturb=0, max_sps=10) {
   disturb=abs(disturb)
@@ -307,6 +338,8 @@ conditional_plot <- function(title, landscape, plot_fun, ...){
 #' @param col corresponds to the \link{raster} col plot parameter. This can be omitted and colors are handled by raster::plot  
 #' @param legend corresponds to the \link{raster} legend plot parameter. This can be omitted and legend is handled by raster::plot
 #' @example inst/examples/plot_raster_single_help.R
+#' @return no return value, called for plot
+#' 
 #' @export
 plot_raster_single <- function(values, landscape, title, no_data = 0, col, legend=TRUE) {
   img <- cbind(landscape[["coordinates"]], no_data)
@@ -323,6 +356,7 @@ plot_raster_single <- function(values, landscape, title, no_data = 0, col, legen
 #' this will result in ncol(values) raster plots.
 #' @param landscape a landscape to plot the values onto
 #' @param no_data what value should be used for missing data present in the values parameter
+#' @return no return value, called for plot
 #'
 #' @export
 plot_raster_multiple <- function(values, landscape, no_data = 0) {
