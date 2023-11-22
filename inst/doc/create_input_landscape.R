@@ -42,7 +42,7 @@ library(raster)
 #      return(1/1000)
 #  }
 
-## ---- echo=FALSE, eval=FALSE--------------------------------------------------
+## ----echo=FALSE, eval=FALSE---------------------------------------------------
 #  landscapes_list_t0 <- list(temp=NULL)
 #  landscapes_list_t0$temp <- c(landscapes_list_t0$temp, temperature_brick[[1]])
 #  
@@ -56,7 +56,7 @@ library(raster)
 #  )
 #  
 
-## ---- eval=T, echo=FALSE, fig.width=4, fig.height=7, fig.cap='This figure shows the connection costs from one site in the middle of South America to all other sites. To travel to the site of Antarctica that is indicated with the arrow, the travelling cost is 3790. The distance matrix was computed using the very simple cost function that has been introduced before and is not adding any penalty.', fig.align='center'----
+## ----eval=T, echo=FALSE, fig.width=4, fig.height=7, fig.cap='This figure shows the connection costs from one site in the middle of South America to all other sites. To travel to the site of Antarctica that is indicated with the arrow, the travelling cost is 3790. The distance matrix was computed using the very simple cost function that has been introduced before and is not adding any penalty.', fig.align='center'----
 knitr::include_graphics("../inst/extdata/SouthAmerica/images/const_cost.png")
 
 #dist_matrix_null_t0 <- readRDS(file.path(datapath, 'CostFunctionExamples/cost_function_null/distances_full/distances_full_0.rds'))
@@ -98,7 +98,7 @@ knitr::include_graphics("../inst/extdata/SouthAmerica/images/const_cost.png")
 #    }
 #  }
 
-## ---- echo=FALSE, eval=FALSE--------------------------------------------------
+## ----echo=FALSE, eval=FALSE---------------------------------------------------
 #  create_input_landscape(landscapes = landscapes_list_t0,
 #                                 cost_function = cost_function_water,
 #                                 output_directory = tempdir(),# a directory name to save the files in
@@ -109,7 +109,7 @@ knitr::include_graphics("../inst/extdata/SouthAmerica/images/const_cost.png")
 #  )
 #  
 
-## ---- eval=TRUE, echo=FALSE, fig.width=4, fig.height=7, fig.align='center', fig.cap='By using a cost function which penalises the crossing of water, the cost of travelling from our cell in the middle of South America to Antarctica increases to 5204.'----
+## ----eval=TRUE, echo=FALSE, fig.width=4, fig.height=7, fig.align='center', fig.cap='By using a cost function which penalises the crossing of water, the cost of travelling from our cell in the middle of South America to Antarctica increases to 5204.'----
 knitr::include_graphics("../inst/extdata/SouthAmerica/images/var_cost.png")
 # dist_matrix_water_t0 <- readRDS('inst/extdata/SouthAmerica/landscape/distances_full/cost_function_water/distances_full/distances_full_0.rds')
 # # C:\VITAL LOCAL\Meus Documentos\ETH PhD\Code\R\package\Gen3sis\inst\extdata\SouthAmerica\landscape\distances_full\cost_function_null\distances_full

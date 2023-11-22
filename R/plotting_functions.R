@@ -86,7 +86,7 @@ plot_landscape_overview <- function(landscape, slices=2, start_end_times=NULL) {
 #'
 #' @param output a sgen3sis output object resulting from a gen3sis simulation (i.e. run_simulation)
 #' @param summary_title summary plot title as character. If NULL, title is computed from input name.
-#' @param summary_legend either a staring with _\_n for new lines or NULL. If NULL, provides default summary and simulation information.
+#' @param summary_legend either a string using \\n for new lines or NULL. If NULL, provides default summary and simulation information.
 #' @seealso \code{\link{run_simulation}}   
 #' @example inst/examples/plot_summary_help.R
 #' @importFrom graphics layout legend axis mtext points
@@ -99,7 +99,7 @@ plot_summary <- function(output, summary_title=NULL, summary_legend=NULL) {
   oldpar <- par(no.readonly = TRUE)
   on.exit(par(oldpar))
   
-  if (class(output)!="gen3sis_output"){
+  if (!is(output, "gen3sis_output")){
     stop("this is not  a gen3sis_output object")
   }
   
@@ -162,7 +162,7 @@ plot_summary <- function(output, summary_title=NULL, summary_legend=NULL) {
   d <- output$summary$phylo_summary[-1,-1]
   plot( d[,"alive"],  xlab="", ylab="", type='l', col="black", lwd=4, frame.plot = FALSE, xaxt='n', yaxt='n')
   axis(4,line=-1, cex=1, cex.axis=1, col="black")
-  mtext(side = 4, text = "\u03B3 richness", col = "black", line = 2, cex=1.1)
+  mtext(side = 4, text = paste("gamma", "richness"), col = "black", line = 2, cex=1.1)
   par(new=TRUE)
   plot( d[,"speciations"],  pch=3, col=rgb(0,0,1, 0.5), xlab="", ylab="", type='b',frame.plot = FALSE, xaxt='n', yaxt='n', ylim=range(d[,c("speciations", "extinctions")]))
   points(d[,"extinctions"], pch=4, col=rgb(1,0,0, 0.5), type="b")
@@ -196,10 +196,8 @@ plot_summary <- function(output, summary_title=NULL, summary_legend=NULL) {
     }
   }
   
-  
-  
   image(ras, col=rc, bty = "o", xlab = "", ylab = "", las=1, asp = 1)
-  mtext(4, text="Final \u03B1 richness", line=1, cex=1.2)
+  mtext(4, text=paste("Final", "alpha", "richness"), line=1, cex=1.2)
   raster::plot(rasterFromXYZ(output$summary$`richness-final`), legend.only=TRUE, add=TRUE,col=rc)
   }
 }
@@ -374,11 +372,21 @@ plot_raster_multiple <- function(values, landscape, no_data = 0) {
 }
 
 
-#' Define gen3sis richness color scale
+#' Define gen3sis richness color scale which is colour-vision deficient and colour-blind people safe based on scientific colour maps by Fabio Crameri
 #' @param n corresponds to the \link{colorRampPalette} parameter 
 #' @return returns a \link{colorRampPalette} function with the gen3sis richness colors
 #' @export
 color_richness <- colorRampPalette(
+  c("#B2F2FD", "#81EEEA", "#61E5C9", "#63DAA0", "#73CE79", "#85BF51", "#94AD2F", "#9B951B",
+    "#9C7E1F", "#9A692B", "#985538", "#944444", "#933251", "#901F61", "#8C0172")
+)
+
+
+#' Define gen3sis richness color scale for non colour-vision deficient and colour-blind people
+#' @param n corresponds to the \link{colorRampPalette} parameter 
+#' @return returns a \link{colorRampPalette} function with the gen3sis richness colors
+#' @export
+color_richness_non_CVDCBP <- colorRampPalette(
   c("#440154FF", "#482878FF", "#3E4A89FF", "#31688EFF", "#26828EFF", "#1F9E89FF", "#35B779FF",
     "#6DCD59FF", "#B4DE2CFF", "#FDE725FF", "#FFA500",   "#FF2900",   "#C40000",   "#8B0000", "#8B0000")
 )
