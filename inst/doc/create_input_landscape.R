@@ -10,12 +10,12 @@ knitr::opts_chunk$set(
 )
 
 ## ----setup, message=F, eval=FALSE, results='hide'-----------------------------
-#  #first we load the required packages
-#  library(gen3sis)
-#  library(raster)
-#  
-#  #next we set the working directory to the downloaded data
-#  datapath <- "data_from_project_gen3sis_simulations"
+# #first we load the required packages
+# library(gen3sis)
+# library(raster)
+# 
+# #next we set the working directory to the downloaded data
+# datapath <- "data_from_project_gen3sis_simulations"
 
 ## ----echo=FALSE, message=F, results='hide'------------------------------------
 #knitr::opts_knit$set(root.dir = '../inst/extdata/')
@@ -24,37 +24,37 @@ library(gen3sis)
 library(raster)
 
 ## ----eval=FALSE, message=F----------------------------------------------------
-#  setwd(datapath)
-#  temperature_brick <- brick('InputRasters/SouthAmerica/temperature_rasters.grd')
-#  aridity_brick <- brick('InputRasters/SouthAmerica/aridity_rasters.grd')
-#  area_brick <- brick('InputRasters/SouthAmerica/area_rasters.grd')
+# setwd(datapath)
+# temperature_brick <- brick('InputRasters/SouthAmerica/temperature_rasters.grd')
+# aridity_brick <- brick('InputRasters/SouthAmerica/aridity_rasters.grd')
+# area_brick <- brick('InputRasters/SouthAmerica/area_rasters.grd')
 
 ## ----eval=FALSE---------------------------------------------------------------
-#  landscapes_list <- list(temp=NULL, arid=NULL, area=NULL)
-#  for(i in 1:nlayers(temperature_brick)){
-#    landscapes_list$temp <- c(landscapes_list$temp, temperature_brick[[i]])
-#    landscapes_list$arid <- c(landscapes_list$arid, aridity_brick[[i]])
-#    landscapes_list$area <- c(landscapes_list$area, area_brick[[i]])
-#  }
+# landscapes_list <- list(temp=NULL, arid=NULL, area=NULL)
+# for(i in 1:nlayers(temperature_brick)){
+#   landscapes_list$temp <- c(landscapes_list$temp, temperature_brick[[i]])
+#   landscapes_list$arid <- c(landscapes_list$arid, aridity_brick[[i]])
+#   landscapes_list$area <- c(landscapes_list$area, area_brick[[i]])
+# }
 
 ## ----eval=FALSE---------------------------------------------------------------
-#  cost_function_null <- function(source, habitable_src, dest, habitable_dest) {
-#      return(1/1000)
-#  }
+# cost_function_null <- function(source, habitable_src, dest, habitable_dest) {
+#     return(1/1000)
+# }
 
 ## ----echo=FALSE, eval=FALSE---------------------------------------------------
-#  landscapes_list_t0 <- list(temp=NULL)
-#  landscapes_list_t0$temp <- c(landscapes_list_t0$temp, temperature_brick[[1]])
-#  
-#  create_input_landscape(landscapes = landscapes_list_t0,
-#                                 cost_function = cost_function_null,
-#                                 output_directory =  tempdir(), # a directory name to save the files in
-#                                 directions = 8, # all surrounding sites from a focus site
-#                                 calculate_full_distance_matrices = TRUE,  # full distance matrix
-#                                 overwrite_output = T,
-#                                 crs="+proj=longlat +ellps=WGS84 +datum=WGS84 +no_defs"
-#  )
-#  
+# landscapes_list_t0 <- list(temp=NULL)
+# landscapes_list_t0$temp <- c(landscapes_list_t0$temp, temperature_brick[[1]])
+# 
+# create_input_landscape(landscapes = landscapes_list_t0,
+#                                cost_function = cost_function_null,
+#                                output_directory =  tempdir(), # a directory name to save the files in
+#                                directions = 8, # all surrounding sites from a focus site
+#                                calculate_full_distance_matrices = TRUE,  # full distance matrix
+#                                overwrite_output = T,
+#                                crs="+proj=longlat +ellps=WGS84 +datum=WGS84 +no_defs"
+# )
+# 
 
 ## ----eval=T, echo=FALSE, fig.width=4, fig.height=7, fig.cap='This figure shows the connection costs from one site in the middle of South America to all other sites. To travel to the site of Antarctica that is indicated with the arrow, the travelling cost is 3790. The distance matrix was computed using the very simple cost function that has been introduced before and is not adding any penalty.', fig.align='center'----
 knitr::include_graphics("../inst/extdata/SouthAmerica/images/const_cost.png")
@@ -90,24 +90,24 @@ knitr::include_graphics("../inst/extdata/SouthAmerica/images/const_cost.png")
 #   axis.args=list(at=seq(mincost, maxcost, 500),labels=seq(mincost, maxcost, 500)), legend.args=list(text='connection cost'))
 
 ## ----eval=FALSE---------------------------------------------------------------
-#  cost_function_water <- function(source, habitable_src, dest, habitable_dest) {
-#    if(!all(habitable_src, habitable_dest)) {
-#      return(2/1000)
-#    } else {
-#      return(1/1000)
-#    }
-#  }
+# cost_function_water <- function(source, habitable_src, dest, habitable_dest) {
+#   if(!all(habitable_src, habitable_dest)) {
+#     return(2/1000)
+#   } else {
+#     return(1/1000)
+#   }
+# }
 
 ## ----echo=FALSE, eval=FALSE---------------------------------------------------
-#  create_input_landscape(landscapes = landscapes_list_t0,
-#                                 cost_function = cost_function_water,
-#                                 output_directory = tempdir(),# a directory name to save the files in
-#                                 directions = 8, # all surrounding sites from a focus site
-#                                 calculate_full_distance_matrices = TRUE,  # full distance matrix
-#                                 overwrite_output = T,
-#                                 crs="+proj=longlat +ellps=WGS84 +datum=WGS84 +no_defs"
-#  )
-#  
+# create_input_landscape(landscapes = landscapes_list_t0,
+#                                cost_function = cost_function_water,
+#                                output_directory = tempdir(),# a directory name to save the files in
+#                                directions = 8, # all surrounding sites from a focus site
+#                                calculate_full_distance_matrices = TRUE,  # full distance matrix
+#                                overwrite_output = T,
+#                                crs="+proj=longlat +ellps=WGS84 +datum=WGS84 +no_defs"
+# )
+# 
 
 ## ----eval=TRUE, echo=FALSE, fig.width=4, fig.height=7, fig.align='center', fig.cap='By using a cost function which penalises the crossing of water, the cost of travelling from our cell in the middle of South America to Antarctica increases to 5204.'----
 knitr::include_graphics("../inst/extdata/SouthAmerica/images/var_cost.png")
@@ -140,11 +140,11 @@ knitr::include_graphics("../inst/extdata/SouthAmerica/images/var_cost.png")
 #    axis.args=list(at=seq(mincost, maxcost, 500),labels=seq(mincost, maxcost, 500)), legend.args=list(text='connection cost'))
 
 ## ----eval=FALSE---------------------------------------------------------------
-#  create_input_landscape(landscapes = landscapes_list,
-#               cost_function = cost_function_water,
-#               directions=8,
-#               output_directory = file.path(tempdir(), "SouthAmerica"),
-#               timesteps = paste0(seq(65, 0, by=-1), "Ma"),
-#               crs="+proj=longlat +ellps=WGS84 +datum=WGS84 +no_defs",
-#               calculate_full_distance_matrices = F)
+# create_input_landscape(landscapes = landscapes_list,
+#              cost_function = cost_function_water,
+#              directions=8,
+#              output_directory = file.path(tempdir(), "SouthAmerica"),
+#              timesteps = paste0(seq(65, 0, by=-1), "Ma"),
+#              crs="+proj=longlat +ellps=WGS84 +datum=WGS84 +no_defs",
+#              calculate_full_distance_matrices = F)
 

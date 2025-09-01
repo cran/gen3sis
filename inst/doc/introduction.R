@@ -100,40 +100,40 @@ par(oldpar)
 # axis.args=list(at=seq(minarea, maxarea, 7500),labels=seq(minarea, maxarea, 7500)))
 
 ## ----eval=FALSE, echo=TRUE----------------------------------------------------
-#  #we set verbose to 0 to avoid a large console outputs of how the simulation is developing
-#  sim <- run_simulation(config = file.path(datapath, "config/config_southamerica.R"),
-#                 landscape = file.path(datapath, "landscape"),
-#                 output_directory = tempdir(),
-#                 call_observer = 1,
-#                 verbose=0)
+# #we set verbose to 0 to avoid a large console outputs of how the simulation is developing
+# sim <- run_simulation(config = file.path(datapath, "config/config_southamerica.R"),
+#                landscape = file.path(datapath, "landscape"),
+#                output_directory = tempdir(),
+#                call_observer = 1,
+#                verbose=0)
 
 ## ----eval=T, echo=F-----------------------------------------------------------
 sim <- readRDS(file.path(datapath, "output/config_southamerica/sgen3sis.rds"))
 
 ## ----eval=F, echo=T, fig.width=7, fig.height=2--------------------------------
-#  timesteps <- c(40, 20, 0)
-#  oldpar <- par(no.readonly = TRUE)
-#  par(mfrow=c(1,3))
-#  for(i in timesteps){
-#    landscape_i <- readRDS(file.path(datapath, paste0('output/config_southamerica/landscapes/landscape_t_', i ,'.rds')))
-#    species_i <- readRDS(file.path(datapath, paste0('output/config_southamerica/species/species_t_', i ,'.rds')))
-#    plot_richness(species_i, landscape_i)
-#  }
-#  par(oldpar)
+# timesteps <- c(40, 20, 0)
+# oldpar <- par(no.readonly = TRUE)
+# par(mfrow=c(1,3))
+# for(i in timesteps){
+#   landscape_i <- readRDS(file.path(datapath, paste0('output/config_southamerica/landscapes/landscape_t_', i ,'.rds')))
+#   species_i <- readRDS(file.path(datapath, paste0('output/config_southamerica/species/species_t_', i ,'.rds')))
+#   plot_richness(species_i, landscape_i)
+# }
+# par(oldpar)
 
 ## ----eval=F, echo=F, fig.width=7, fig.height=2--------------------------------
-#  #GENERATE OFFLINE PLOT
-#  timesteps <- c(40, 20, 0)
-#  png("../inst/logo/richness_plot.png", height=500, width=1750, pointsize=28)
-#  oldpar <- par(no.readonly = TRUE)
-#  par(mfrow=c(1,3))
-#  for(i in timesteps){
-#    landscape_i <- readRDS(file.path(datapath, paste0('output/config_southamerica/landscapes/landscape_t_', i ,'.rds')))
-#    species_i <- readRDS(file.path(datapath, paste0('output/config_southamerica/species/species_t_', i ,'.rds')))
-#    plot_richness(species_i, landscape_i)
-#  }
-#  par(oldpar)
-#  dev.off()
+# #GENERATE OFFLINE PLOT
+# timesteps <- c(40, 20, 0)
+# png("../inst/logo/richness_plot.png", height=500, width=1750, pointsize=28)
+# oldpar <- par(no.readonly = TRUE)
+# par(mfrow=c(1,3))
+# for(i in timesteps){
+#   landscape_i <- readRDS(file.path(datapath, paste0('output/config_southamerica/landscapes/landscape_t_', i ,'.rds')))
+#   species_i <- readRDS(file.path(datapath, paste0('output/config_southamerica/species/species_t_', i ,'.rds')))
+#   plot_richness(species_i, landscape_i)
+# }
+# par(oldpar)
+# dev.off()
 
 ## ----eval=T, echo=F, out.width='700px', height='200px'------------------------
 #PLOT OFFLINE PLOT
